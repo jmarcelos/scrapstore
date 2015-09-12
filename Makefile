@@ -6,4 +6,4 @@ createenv:
 
 creategit:
 	git init
-	echo "# Virtualenv\n.Python\n[Bb]in\n[Ii]nclude\n[Ll]ib\n[Ll]ocal\n# MacOSX\n.DS_Store" >> .gitignore
+	echo "# Virtualenv\n.Python\n.ini\nenv_scrapstore/\n[Bb]in\n[Ii]nclude\n[Ll]ib\n[Ll]ocal\n# MacOSX\n.DS_Store" >> .gitignore
