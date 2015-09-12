@@ -1,0 +1,9 @@
+# Virtualenv
+.Python
+[Bb]in
+[Ii]nclude
+[Ll]ib
+[Ll]ocal
+# MacOSX
+.DS_Store
+

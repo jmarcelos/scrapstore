@@ -1,0 +1,6 @@
+
+#para geração de imagens
+# precisa instalar o pyqt por fora
+#Ghost.py==0.2.2
+#PySide==1.2.2
+#wsgiref==0.1.2
