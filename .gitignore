@@ -4,6 +4,6 @@
 [Ii]nclude
 [Ll]ib
 [Ll]ocal
-.ini
+*.ini
 # MacOSX
 .DS_Store
