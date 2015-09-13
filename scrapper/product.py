@@ -1,6 +1,8 @@
 from datetime import datetime
 from mongomodel import MongoCollection
 
+
+
 class Product(MongoCollection):
     url = None
     name = None
@@ -26,5 +28,9 @@ class ProductHistory(MongoCollection):
     data_scan = datetime.now().strftime("%Y-%m-%d")
     price = 0.00
 
-    def __init__(self, price)
+    def __init__(self, price):
         self.price = price
+
+
+class AmericanasProduct(Product):
+    pass
