@@ -6,3 +6,4 @@ virtualenv==1.11.6
 virtualenv-clone==0.2.5
 virtualenvwrapper==4.3.1
 wget==2.2
+pycurl==7.19.5.1

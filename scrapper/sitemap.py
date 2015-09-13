@@ -1,8 +1,12 @@
 import urllib2
 from xml.dom import minidom
 from mongomodel import MongoCollection
+from crawl import Crawler
+from lxml import html as lhtml
+from re import sub
 
-class Sitemap(MongoCollection):
+
+class HomePage(MongoCollection):
 
     url = None
     prioridade = 0
@@ -15,6 +19,42 @@ class Sitemap(MongoCollection):
         self.data_scan = data_scan
         self.site = site
 
+    def parse(self):
+        page_number = 1
+        product_list = []
+        while True:
+            url = self.url + "?" + self.getPaginationRule(page_number)
+            html,headers = Crawler().get(self.url)
+            doc = lhtml.fromstring(html)
+            product_list_aux = self.getProductList(doc)
+            print url
+            print len(product_list_aux)
+            if not product_list_aux:
+                break
+            product_list = product_list + product_list_aux
+            page_number += 1
+            #break
+        return product_list
+
+
+    def getProductList(self, doc):
+        return []
+
+    def getPaginationRule(self, page_number):
+        return ""
+
+#from sitemap import HomePageAmericanas; acom = HomePageAmericanas(); acom.url = "http://www.americanas.com.br/linha/267868/informatica/notebook"; acom.parse()
+
+class HomePageAmericanas(HomePage):
+
+    pagination_parameters = "ofertas.limit=%s&ofertas.offset=%s"
+    quantidade_por_pagina = 90
+
+    def getProductList(self, doc):
+        return  doc.xpath('//div[@class="paginado"]/section/article/div/form/@action')
+
+    def getPaginationRule(self, page_number):
+        return "ofertas.limit=%s&ofertas.offset=%s" % (self.quantidade_por_pagina, self.quantidade_por_pagina * page_number)
 
 class SitemapReader:
 
@@ -34,8 +74,8 @@ class SitemapReader:
             homepage_list = self.readSitemap(localizacoes, sitemap_key)
             full_homepage_list = full_homepage_list + homepage_list
 
-        print "final"
-        print len(full_homepage_list)
+        #print "final"
+        #print len(full_homepage_list)
         return full_homepage_list
 
     def readSitemap(self, localizacoes, sitemap_key):
@@ -46,12 +86,12 @@ class SitemapReader:
                 homepage_list_aux = self.readSitemap(self.searchHomeProduct(url), sitemap_key)
                 homepage_list = homepage_list + homepage_list_aux
             else:
-                conteudo = Sitemap(url=url, prioridade=10, site=sitemap_key)
+                conteudo = HomePage(url=url, prioridade=10, site=sitemap_key)
                 #print conteudo.to_dict()
-                homepage_list.append(conteudo.to_dict())
+                homepage_list.append(conteudo)
 
-        print "dentro do readSitemap"
-        print len(homepage_list)
+        #print "dentro do readSitemap"
+        #print len(homepage_list)
         return homepage_list
 
     def searchHomeProduct(self, url):
@@ -66,15 +106,18 @@ class SitemapReader:
 
         return localizacoes
 
-    def sameSitemapContent(self, content):
-
-        return false
+    #perfomance rules!!!
+    #def sameSitemapContent(self, content):
+    #    return false
 
 #x = SitemapReader({"Extra":"http://buscando.extra.com.br/sitemap.xml" })
 #x = SitemapReader({"Netshoes": "http://www.netshoes.com.br/sitemap.xml"})
 #x = SitemapReader({"Submarino": "http://www.submarino.com.br/sitemap_index_suba.xml"})
 #x = SitemapReader({"Americanas":"http://www.americanas.com.br/sitemap_index_acom.xml" })
-#ponto frio, walmart, 
-x = SitemapReader({"Americanas":"http://www.americanas.com.br/sitemap_index_acom.xml", "Extra":"http://buscando.extra.com.br/sitemap.xml", "Netshoes": "http://www.netshoes.com.br/sitemap.xml", "Submarino": "http://www.submarino.com.br/sitemap_index_suba.xml" })
 
-x.run()
+#ponto frio, walmart, amazon(http://www.amazon.com.br/sitemap-manual-index.xml) --> server error
+#x = SitemapReader({"Americanas":"http://www.americanas.com.br/sitemap_index_acom.xml", "Extra":"http://buscando.extra.com.br/sitemap.xml", "Netshoes": "http://www.netshoes.com.br/sitemap.xml", "Submarino": "http://www.submarino.com.br/sitemap_index_suba.xml" })
+
+#lista = x.run()
+#persiste = MongoCollection()
+#persiste.save_in_bulk([c.to_dict() for c in lista])

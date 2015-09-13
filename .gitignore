@@ -1,4 +1,5 @@
 # Virtualenv
+env_scrapstore/
 .Python
 [Bb]in
 [Ii]nclude
