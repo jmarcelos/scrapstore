@@ -1,6 +1,8 @@
-
-#para geração de imagens
-# precisa instalar o pyqt por fora
-#Ghost.py==0.2.2
-#PySide==1.2.2
-#wsgiref==0.1.2
+pbr==0.10.0
+pymongo==3.0.3
+six==1.8.0
+stevedore==1.1.0
+virtualenv==1.11.6
+virtualenv-clone==0.2.5
+virtualenvwrapper==4.3.1
+wget==2.2
