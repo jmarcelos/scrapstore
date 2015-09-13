@@ -7,3 +7,4 @@
 *.ini
 # MacOSX
 .DS_Store
+.pyc
