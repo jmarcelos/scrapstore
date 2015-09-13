@@ -32,8 +32,9 @@ class SitemapReader:
             url = self.sitemaps[sitemap_key]
             localizacoes = self.searchHomeProduct(url)
             homepage_list = self.readSitemap(localizacoes, sitemap_key)
-            full_homepage_list.append(homepage_list)
+            full_homepage_list = full_homepage_list + homepage_list
 
+        print "final"
         print len(full_homepage_list)
         return full_homepage_list
 
@@ -42,12 +43,15 @@ class SitemapReader:
         for local in localizacoes:
             url = local.firstChild.nodeValue
             if "xml" in url:
-                homepage_list = self.readSitemap(self.searchHomeProduct(url), sitemap_key)
+                homepage_list_aux = self.readSitemap(self.searchHomeProduct(url), sitemap_key)
+                homepage_list = homepage_list + homepage_list_aux
             else:
                 conteudo = Sitemap(url=url, prioridade=10, site=sitemap_key)
                 #print conteudo.to_dict()
                 homepage_list.append(conteudo.to_dict())
 
+        print "dentro do readSitemap"
+        print len(homepage_list)
         return homepage_list
 
     def searchHomeProduct(self, url):
@@ -67,6 +71,10 @@ class SitemapReader:
         return false
 
 #x = SitemapReader({"Extra":"http://buscando.extra.com.br/sitemap.xml" })
-x = SitemapReader({"Americanas":"http://www.americanas.com.br/sitemap_index_acom.xml", "Extra":"http://buscando.extra.com.br/sitemap.xml" })
+#x = SitemapReader({"Netshoes": "http://www.netshoes.com.br/sitemap.xml"})
+#x = SitemapReader({"Submarino": "http://www.submarino.com.br/sitemap_index_suba.xml"})
 #x = SitemapReader({"Americanas":"http://www.americanas.com.br/sitemap_index_acom.xml" })
-print x.run()
+#ponto frio, walmart, 
+x = SitemapReader({"Americanas":"http://www.americanas.com.br/sitemap_index_acom.xml", "Extra":"http://buscando.extra.com.br/sitemap.xml", "Netshoes": "http://www.netshoes.com.br/sitemap.xml", "Submarino": "http://www.submarino.com.br/sitemap_index_suba.xml" })
+
+x.run()
