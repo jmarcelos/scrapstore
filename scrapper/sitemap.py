@@ -13,11 +13,37 @@ class HomePage(MongoCollection):
     data_scan = None
     site = None
 
+    USER_AGENT = ('User-agent', 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)')
+
     def __init__(self, url=None, site=None, prioridade=10, data_scan=None):
         self.url = url
         self.prioridade = prioridade
         self.data_scan = data_scan
         self.site = site
+
+    def parse2(self):
+        page_number = 1
+        product_list = []
+
+        while True:
+
+            opener = urllib2.build_opener()
+            opener.addheaders = [self.USER_AGENT]
+            url = self.url + "?" + self.getPaginationRule(page_number)
+            file = opener.open(url)
+            file_content = file.read()
+            file.close()
+            doc = lhtml.fromstring(file_content)
+            product_list_aux = self.getProductList(doc)
+            print url + "  " + str(len(product_list_aux))
+            print product_list_aux
+            if not product_list_aux:
+                break
+            product_list = product_list + product_list_aux
+            page_number += 1
+
+        return product_list
+
 
     def parse(self):
         page_number = 1
