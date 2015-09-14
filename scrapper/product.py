@@ -23,6 +23,8 @@ class Product(MongoCollection):
         self.site = site
         self.product_history.append(product_history)
 
+
+
 class ProductHistory(MongoCollection):
 
     data_scan = datetime.now().strftime("%Y-%m-%d")
@@ -38,3 +40,6 @@ class AmericanasProduct(Product):
     def save_in_bulk(self, content_list):
         if content_list:
             super(AmericanasProduct, self).save_in_bulk(self.AMERICANAS_PRODUCTLIST_COLLETION, [c.to_dict() for c in content_list])
+
+    def getList(self):
+        return super(AmericanasProduct, self).read_content(self.AMERICANAS_PRODUCTLIST_COLLETION, {'site': 'Americanas'})

@@ -24,24 +24,25 @@ class HomePage(MongoCollection):
     def parse(self):
         page_number = 1
         product_list = []
-
+        opener = urllib2.build_opener()
+        opener.addheaders = [self.USER_AGENT]
         while True:
-
-            opener = urllib2.build_opener()
-            opener.addheaders = [self.USER_AGENT]
             url = self.url + "?" + self.getPaginationRule(page_number)
-            file = opener.open(url)
-            file_content = file.read()
-            file.close()
-            doc = lhtml.fromstring(file_content)
-            product_list_aux = self.getParsedProductList(doc)
-            print url + "  " + str(len(product_list_aux))
-            print product_list_aux
-            if not product_list_aux:
-                break
-            product_list = product_list + product_list_aux
-            page_number += 1
+            try:
+                file = opener.open(url)
+                file_content = file.read()
+                file.close()
+                doc = lhtml.fromstring(file_content)
+                product_list_aux = self.getParsedProductList(doc)
+                print url + "  " + str(len(product_list_aux))
+                if not product_list_aux:
+                    break
+                product_list = product_list + product_list_aux
+                page_number += 1
 
+            except Exception, e:
+                print e
+                continue
 
         print "final " + str(len(product_list))
         return product_list
@@ -56,7 +57,7 @@ class HomePage(MongoCollection):
         super(HomePage, self).save_in_bulk(self.HOMELIST_COLLETION, [c.to_dict() for c in content_list])
 
     def getList(self):
-        super(HomePage, self).read_home_page_list(self.HOMELIST_COLLETION)
+        super(HomePage, self).read_content(self.HOMELIST_COLLETION)
 
 #from sitemap import HomePageAmericanas; acom = HomePageAmericanas(); acom.url = "http://www.americanas.com.br/linha/267868/informatica/notebook"; acom.parse()
 
@@ -67,7 +68,7 @@ class HomePageAmericanas(HomePage):
     quantidade_por_pagina = 90
 
     def getParsedProductList(self, doc):
-        return  doc.xpath('//div[@class="paginado"]/section/article/div/form/div[@class="productImg"]/a/@href')
+        return doc.xpath('//div[@class="paginado"]/section/article/div/form/div[@class="productImg"]/a/@href')
 
     def getPaginationRule(self, page_number):
         if page_number == 1:
@@ -75,4 +76,4 @@ class HomePageAmericanas(HomePage):
         return "ofertas.limit=%s&ofertas.offset=%s" % (self.quantidade_por_pagina, self.quantidade_por_pagina * page_number)
 
     def getList(self):
-        return super(HomePageAmericanas, self).read_home_page_list(self.HOMELIST_COLLETION, {'site': 'Americanas'})
+        return super(HomePageAmericanas, self).read_content(self.HOMELIST_COLLETION, {'site': 'Americanas'})

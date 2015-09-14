@@ -19,7 +19,7 @@ class MongoCollection(object):
     def save_in_bulk(self, collecion_name, content_list_dict):
         return self.db[collecion_name].insert_many(content_list_dict).inserted_ids
 
-    def read_home_page_list(self, collection_name, parameters=None):
+    def read_content(self, collection_name, parameters=None):
         content_list = []
         cursor = self.db[collection_name].find(parameters)
         for item in cursor:
