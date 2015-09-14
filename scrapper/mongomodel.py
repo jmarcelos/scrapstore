@@ -14,3 +14,5 @@ class MongoCollection(object):
     def save(self):
         self.db[self.__class__.__name__].insert_one(self.to_dict()).inserted_id
 
+    def save_or_update(self, filter):
+        self.db[self.__class__.__name__].update_one(filter,{"$set": self.to_dict()},True)
