@@ -8,7 +8,7 @@ class MongoCollection(object):
     client = MongoClient(connection_string)
     db = client[database_name]
     HOMELIST_COLLETION = "HOMELIST_COLLETION"
-    PRODUCTLIST_COLLETION = "PRODUCTLIST_COLLETION"
+
 
     def to_dict(self):
         return self.__dict__
@@ -16,8 +16,12 @@ class MongoCollection(object):
     def save(self, collecion_name):
         return self.db[collection_name].insert_one(self.to_dict()).inserted_id
 
-    def save_in_bulk(self, collecion_name, list_content_dict):
-        return self.db[collecion_name].insert_many(list_content_dict).inserted_ids
+    def save_in_bulk(self, collecion_name, content_list_dict):
+        return self.db[collecion_name].insert_many(content_list_dict).inserted_ids
 
-    def read_home_page_list(self, collection_name, parameters):
-        return self.db[collection_name].find()
+    def read_home_page_list(self, collection_name, parameters=None):
+        content_list = []
+        cursor = self.db[collection_name].find(parameters)
+        for item in cursor:
+            content_list.append(item)
+        return content_list

@@ -11,6 +11,7 @@ class HomePage(MongoCollection):
     site = None
 
     USER_AGENT = ('User-agent', 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)')
+    HOMELIST_COLLETION = "HOMELIST_COLLETION"
 
     def __init__(self, url=None, site=None, prioridade=10, data_scan=None):
         self.url = url
@@ -33,27 +34,29 @@ class HomePage(MongoCollection):
             file_content = file.read()
             file.close()
             doc = lhtml.fromstring(file_content)
-            product_list_aux = self.getProductList(doc)
+            product_list_aux = self.getParsedProductList(doc)
             print url + "  " + str(len(product_list_aux))
             print product_list_aux
             if not product_list_aux:
                 break
             product_list = product_list + product_list_aux
             page_number += 1
-            #product_list_aux = []
+
 
         print "final " + str(len(product_list))
-        print product_list
+        return product_list
 
-    def getProductList(self, doc):
+    def getParsedProductList(self, doc):
         return []
 
     def getPaginationRule(self, page_number):
         return ""
 
-    def save_in_bulk(self,list_content):
-        super(HomePage, self).save_in_bulk(self.PRODUCTLIST_COLLETION, [c.to_dict() for c in list_content])
+    def save_in_bulk(self,content_list):
+        super(HomePage, self).save_in_bulk(self.HOMELIST_COLLETION, [c.to_dict() for c in content_list])
 
+    def getList(self):
+        super(HomePage, self).read_home_page_list(self.HOMELIST_COLLETION)
 
 #from sitemap import HomePageAmericanas; acom = HomePageAmericanas(); acom.url = "http://www.americanas.com.br/linha/267868/informatica/notebook"; acom.parse()
 
@@ -63,10 +66,13 @@ class HomePageAmericanas(HomePage):
     pagination_parameters = "ofertas.limit=%s&ofertas.offset=%s"
     quantidade_por_pagina = 90
 
-    def getProductList(self, doc):
+    def getParsedProductList(self, doc):
         return  doc.xpath('//div[@class="paginado"]/section/article/div/form/div[@class="productImg"]/a/@href')
 
     def getPaginationRule(self, page_number):
         if page_number == 1:
             return "ofertas.limit=%s" % self.quantidade_por_pagina
         return "ofertas.limit=%s&ofertas.offset=%s" % (self.quantidade_por_pagina, self.quantidade_por_pagina * page_number)
+
+    def getList(self):
+        return super(HomePageAmericanas, self).read_home_page_list(self.HOMELIST_COLLETION, {'site': 'Americanas'})

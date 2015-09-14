@@ -13,7 +13,7 @@ class Product(MongoCollection):
     product_history = []
     scan_date = datetime.now().strftime("%Y-%m-%d")
 
-    def __init__(self, url, name, site, description=None, keywords=None, picture=None, product_history=None):
+    def __init__(self, url=None, name=None, site=None, description=None, price=0.00, keywords=None, picture=None, product_history=None):
         self.url = url
         self.name = name
         self.description = description
@@ -33,4 +33,8 @@ class ProductHistory(MongoCollection):
 
 
 class AmericanasProduct(Product):
-    pass
+    AMERICANAS_PRODUCTLIST_COLLETION = "AMERICANAS_PRODUCTLIST_COLLETION"
+
+    def save_in_bulk(self, content_list):
+        if content_list:
+            super(AmericanasProduct, self).save_in_bulk(self.AMERICANAS_PRODUCTLIST_COLLETION, [c.to_dict() for c in content_list])
