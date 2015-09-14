@@ -1,19 +1,8 @@
 import urllib2
 from xml.dom import minidom
 from mongomodel import MongoCollection
-
-class Sitemap(MongoCollection):
-
-    url = None
-    prioridade = 0
-    data_scan = None
-    site = None
-
-    def __init__(self, url=None, site=None, prioridade=10, data_scan=None):
-        self.url = url
-        self.prioridade = prioridade
-        self.data_scan = data_scan
-        self.site = site
+from home import HomePageAmericanas, HomePage
+from product import AmericanasProduct
 
 
 class SitemapReader:
@@ -34,8 +23,6 @@ class SitemapReader:
             homepage_list = self.readSitemap(localizacoes, sitemap_key)
             full_homepage_list = full_homepage_list + homepage_list
 
-        print "final"
-        print len(full_homepage_list)
         return full_homepage_list
 
     def readSitemap(self, localizacoes, sitemap_key):
@@ -46,12 +33,9 @@ class SitemapReader:
                 homepage_list_aux = self.readSitemap(self.searchHomeProduct(url), sitemap_key)
                 homepage_list = homepage_list + homepage_list_aux
             else:
-                conteudo = Sitemap(url=url, prioridade=10, site=sitemap_key)
-                #print conteudo.to_dict()
-                homepage_list.append(conteudo.to_dict())
+                conteudo = HomePage(url=url, prioridade=10, site=sitemap_key)
+                homepage_list.append(conteudo)
 
-        print "dentro do readSitemap"
-        print len(homepage_list)
         return homepage_list
 
     def searchHomeProduct(self, url):
@@ -66,15 +50,32 @@ class SitemapReader:
 
         return localizacoes
 
-    def sameSitemapContent(self, content):
 
-        return false
 
+def generateHomePages():
+
+# roda sitemap gerando homepage
 #x = SitemapReader({"Extra":"http://buscando.extra.com.br/sitemap.xml" })
 #x = SitemapReader({"Netshoes": "http://www.netshoes.com.br/sitemap.xml"})
 #x = SitemapReader({"Submarino": "http://www.submarino.com.br/sitemap_index_suba.xml"})
 #x = SitemapReader({"Americanas":"http://www.americanas.com.br/sitemap_index_acom.xml" })
-#ponto frio, walmart, 
-x = SitemapReader({"Americanas":"http://www.americanas.com.br/sitemap_index_acom.xml", "Extra":"http://buscando.extra.com.br/sitemap.xml", "Netshoes": "http://www.netshoes.com.br/sitemap.xml", "Submarino": "http://www.submarino.com.br/sitemap_index_suba.xml" })
+#ponto frio, walmart, amazon(http://www.amazon.com.br/sitemap-manual-index.xml) --> server error
+    x = SitemapReader({"Americanas":"http://www.americanas.com.br/sitemap_index_acom.xml", "Extra":"http://buscando.extra.com.br/sitemap.xml", "Netshoes": "http://www.netshoes.com.br/sitemap.xml", "Submarino": "http://www.submarino.com.br/sitemap_index_suba.xml" })
+    lista = x.run()
+    persiste = HomePage()
+    persiste.save_in_bulk(lista)
 
-x.run()
+def generateProductPage():
+#roda homepage gerando produto
+    a = HomePageAmericanas()
+    homepage_list = a.getList()
+    for home in homepage_list:
+        a.url = home['url']
+        product_list_aux = a.parse()
+        product_list = []
+        for product in product_list_aux:
+            prodAmericanas = AmericanasProduct(url=product)
+            prodAmericanas.url = product
+            product_list.append(prodAmericanas)
+        persistencia = AmericanasProduct()
+        persistencia.save_in_bulk(product_list)

@@ -32,3 +32,14 @@ class ProductHistory(MongoCollection):
         self.price = price
         self.scan_date = scan_date
 
+
+
+class AmericanasProduct(Product):
+    AMERICANAS_PRODUCTLIST_COLLETION = "AMERICANAS_PRODUCTLIST_COLLETION"
+
+    def save_in_bulk(self, content_list):
+        if content_list:
+            super(AmericanasProduct, self).save_in_bulk(self.AMERICANAS_PRODUCTLIST_COLLETION, [c.to_dict() for c in content_list])
+
+    def getList(self):
+        return super(AmericanasProduct, self).read_content(self.AMERICANAS_PRODUCTLIST_COLLETION)
