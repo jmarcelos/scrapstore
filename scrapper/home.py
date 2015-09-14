@@ -34,16 +34,14 @@ class HomePage(MongoCollection):
                 file.close()
                 doc = lhtml.fromstring(file_content)
                 product_list_aux = self.getParsedProductList(doc)
-                print url + "  " + str(len(product_list_aux))
+                print url
                 if not product_list_aux:
                     break
                 product_list = product_list + product_list_aux
-                page_number += 1
-
             except Exception, e:
                 print e
                 continue
-
+            page_number += 1
         print "final " + str(len(product_list))
         return product_list
 

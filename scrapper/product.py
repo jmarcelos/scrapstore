@@ -1,8 +1,6 @@
 from datetime import datetime
 from mongomodel import MongoCollection
 
-
-
 class Product(MongoCollection):
     url = None
     name = None
@@ -42,4 +40,4 @@ class AmericanasProduct(Product):
             super(AmericanasProduct, self).save_in_bulk(self.AMERICANAS_PRODUCTLIST_COLLETION, [c.to_dict() for c in content_list])
 
     def getList(self):
-        return super(AmericanasProduct, self).read_content(self.AMERICANAS_PRODUCTLIST_COLLETION, {'site': 'Americanas'})
+        return super(AmericanasProduct, self).read_content(self.AMERICANAS_PRODUCTLIST_COLLETION)

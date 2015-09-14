@@ -50,29 +50,32 @@ class SitemapReader:
 
         return localizacoes
 
+
+
+def generateHomePages():
+
 # roda sitemap gerando homepage
 #x = SitemapReader({"Extra":"http://buscando.extra.com.br/sitemap.xml" })
 #x = SitemapReader({"Netshoes": "http://www.netshoes.com.br/sitemap.xml"})
 #x = SitemapReader({"Submarino": "http://www.submarino.com.br/sitemap_index_suba.xml"})
 #x = SitemapReader({"Americanas":"http://www.americanas.com.br/sitemap_index_acom.xml" })
-
 #ponto frio, walmart, amazon(http://www.amazon.com.br/sitemap-manual-index.xml) --> server error
-#x = SitemapReader({"Americanas":"http://www.americanas.com.br/sitemap_index_acom.xml", "Extra":"http://buscando.extra.com.br/sitemap.xml", "Netshoes": "http://www.netshoes.com.br/sitemap.xml", "Submarino": "http://www.submarino.com.br/sitemap_index_suba.xml" })
+    x = SitemapReader({"Americanas":"http://www.americanas.com.br/sitemap_index_acom.xml", "Extra":"http://buscando.extra.com.br/sitemap.xml", "Netshoes": "http://www.netshoes.com.br/sitemap.xml", "Submarino": "http://www.submarino.com.br/sitemap_index_suba.xml" })
+    lista = x.run()
+    persiste = HomePage()
+    persiste.save_in_bulk(lista)
 
-#lista = x.run()
-#persiste = HomePage()
-#persiste.save_in_bulk(lista)
-
+def generateProductPage():
 #roda homepage gerando produto
-a = HomePageAmericanas()
-homepage_list = a.getList()
-for home in homepage_list:
-    a.url = home['url']
-    product_list_aux = a.parse()
-    product_list = []
-    for product in product_list_aux:
-        prodAmericanas = AmericanasProduct(url=product)
-        prodAmericanas.url = product
-        product_list.append(prodAmericanas)
-    persistencia = AmericanasProduct()
-    persistencia.save_in_bulk(product_list)
+    a = HomePageAmericanas()
+    homepage_list = a.getList()
+    for home in homepage_list:
+        a.url = home['url']
+        product_list_aux = a.parse()
+        product_list = []
+        for product in product_list_aux:
+            prodAmericanas = AmericanasProduct(url=product)
+            prodAmericanas.url = product
+            product_list.append(prodAmericanas)
+        persistencia = AmericanasProduct()
+        persistencia.save_in_bulk(product_list)
