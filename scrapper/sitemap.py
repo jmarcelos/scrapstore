@@ -1,19 +1,17 @@
-import urllib2
-from xml.dom import minidom
-from mongomodel import MongoCollection
-from home import HomePageAmericanas, HomePage
-from product import AmericanasProduct
+from model.home import HomePageAmericanas, HomePage
+from model.product import AmericanasProduct
+from helper.crawler import Crawler
 
 
-class SitemapReader:
+class SitemapReader():
 
     sitemap = []
     site = None
-    USER_AGENT = ('User-agent', 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)')
 
     def __init__(self, sitemaps):
         print "iniciando a leitura"
         self.sitemaps = sitemaps
+        self.crawler = Crawler()
 
     def run(self):
         full_homepage_list = []
@@ -39,15 +37,8 @@ class SitemapReader:
         return homepage_list
 
     def searchHomeProduct(self, url):
-        opener = urllib2.build_opener()
-        opener.addheaders = [self.USER_AGENT]
-        file = opener.open(url)
-        file_content = file.read()
-        file.close()
-        xmldoc = minidom.parseString(file_content)
-
-        localizacoes = xmldoc.getElementsByTagName('loc')
-
+        xmldoc = self.crawler.crawlXML(url)
+        localizacoes = self.crawler.getXMLInfo(xmldoc, 'loc')
         return localizacoes
 
 
@@ -65,6 +56,8 @@ def generateHomePages():
     persiste = HomePage()
     persiste.save_in_bulk(lista)
 
+#generateHomePages()
+
 def generateProductPage():
 #roda homepage gerando produto
     a = HomePageAmericanas()
@@ -78,4 +71,8 @@ def generateProductPage():
             prodAmericanas.url = product
             product_list.append(prodAmericanas)
         persistencia = AmericanasProduct()
+        import pdb; pdb.set_trace()
+        
         persistencia.save_in_bulk(product_list)
+
+generateProductPage()

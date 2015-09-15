@@ -1,5 +1,5 @@
 from datetime import datetime
-from mongomodel import MongoCollection
+from helper.mongomodel import MongoCollection
 
 class Product(MongoCollection):
     url = None
@@ -12,7 +12,7 @@ class Product(MongoCollection):
     last_price = 0.0
     last_scan_date = datetime.now().strftime("%Y-%m-%d")
 
-    def __init__(self, url, name, site, last_price, last_scan_date, description=None, keywords=None, picture=None, product_history=None):
+    def __init__(self, url=None, name=None, site=None, last_price=None, last_scan_date=None, description=None, keywords=None, picture=None, product_history=None):
         self.url = url
         self.name = name
         self.description = description
@@ -35,11 +35,6 @@ class ProductHistory(MongoCollection):
 
 
 class AmericanasProduct(Product):
-    AMERICANAS_PRODUCTLIST_COLLETION = "AMERICANAS_PRODUCTLIST_COLLETION"
 
     def save_in_bulk(self, content_list):
-        if content_list:
-            super(AmericanasProduct, self).save_in_bulk(self.AMERICANAS_PRODUCTLIST_COLLETION, [c.to_dict() for c in content_list])
-
-    def getList(self):
-        return super(AmericanasProduct, self).read_content(self.AMERICANAS_PRODUCTLIST_COLLETION)
+        super(AmericanasProduct, self).save_in_bulk(self.AMERICANAS_PRODUCTLIST_COLLETION, content_list)
