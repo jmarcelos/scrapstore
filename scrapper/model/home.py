@@ -50,7 +50,18 @@ class HomePageAmericanas(HomePage):
     quantidade_por_pagina = 90
 
     def getParsedContent(self, doc):
-        product_list = self.getHTMLInfo(doc, '//div[@class="paginado"]/section/article/div/form/div[@class="productImg"]/a/@href')
+        content_list = self.getHTMLInfo(doc, '//div[@class="paginado"]/section/article/div/form')
+        print content_list
+        for content in content_list:
+            print content
+            url = self.getHTMLInfo(content, '//div[@class="paginado"]/section/article/div/form/div[@class="productImg"]/a/@href')
+            id =  self.getHTMLInfo(content, '//div[@class="paginado"]/section/article/div/form/meta/@content')
+            print url + " " + id
+            break
+        product_list = self.getHTMLInfo(doc, '//div[@class="paginado"]/section/article/div/form/meta/@content')
+        import pdb; pdb.set_trace()
+
+
         return product_list
 
     def getPaginationRule(self, page_number):

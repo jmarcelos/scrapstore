@@ -72,7 +72,10 @@ def generateProductPage():
             product_list.append(prodAmericanas)
         persistencia = AmericanasProduct()
         import pdb; pdb.set_trace()
-        
+
         persistencia.save_in_bulk(product_list)
 
-generateProductPage()
+#generateProductPage()
+
+a = HomePageAmericanas(url="http://www.americanas.com.br/linha/267868/informatica/notebook")
+a.parse()

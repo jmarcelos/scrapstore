@@ -31,7 +31,7 @@ class Crawler:
     def getHTMLInfo(self, document, rules=None):
         if not document:
             raise ValueError('Document could not be null')
-        #return document.xpath('//div[@class="paginado"]/section/article/div/form/div[@class="productImg"]/a/@href')
+        #return document.xpath('//div[@class="paginado"]/section/article/div/form/div[@class="productImg"]/a/@href')    
         return document.xpath(rules)
 
     def getXMLInfo(self, document, rules=None):
