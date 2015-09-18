@@ -10,6 +10,8 @@ class MongoCollection(object):
 
     HOMELIST_COLLETION = "HOMELIST_COLLETION"
     AMERICANAS_PRODUCTLIST_COLLETION = "AMERICANAS_PRODUCTLIST_COLLETION"
+    EXTRA_PRODUCTLIST_COLLETION = "AMERICANAS_PRODUCTLIST_COLLETION"
+    SUBMARINO_PRODUCTLIST_COLLETION = "AMERICANAS_PRODUCTLIST_COLLETION"
 
     def to_dict(self):
         return self.__dict__
@@ -20,9 +22,9 @@ class MongoCollection(object):
     def save_or_update(self, filter):
         self.db[self.__class__.__name__].update_one(filter,{"$set": self.to_dict()},True)
 
-    def save_in_bulk(self, content_list):
-        if content_list:
-            return self.db[self.__class__.__name__].insert_many([c.to_dict() for c in content_list]).inserted_ids
+    #def save_in_bulk(self, content_list):
+        #if content_list:
+            #return self.db[self.__class__.__name__].insert_many([c.to_dict() for c in content_list]).inserted_ids
 
     def save_in_bulk(self, collection_name, content_list):
         if content_list:

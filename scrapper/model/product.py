@@ -3,6 +3,7 @@ from helper.mongomodel import MongoCollection
 
 class Product(MongoCollection):
     url = None
+    id = None
     name = None
     description = None
     site = None
@@ -33,8 +34,19 @@ class ProductHistory(MongoCollection):
         self.scan_date = scan_date
 
 
-
 class AmericanasProduct(Product):
+
+    def save_in_bulk(self, content_list):
+        super(AmericanasProduct, self).save_in_bulk(self.AMERICANAS_PRODUCTLIST_COLLETION, content_list)
+
+
+class SubmarinoProduct(Product):
+
+    def save_in_bulk(self, content_list):
+        super(AmericanasProduct, self).save_in_bulk(self.SUBMARINO_PRODUCTLIST_COLLETION, content_list)
+
+
+class ExtraProduct(Product):
 
     def save_in_bulk(self, content_list):
         super(AmericanasProduct, self).save_in_bulk(self.AMERICANAS_PRODUCTLIST_COLLETION, content_list)

@@ -12,6 +12,7 @@ class Crawler:
         self.__opener.addheaders = [self.USER_AGENT]
 
     def crawl(self, url):
+        print url
         if not url:
             raise ValueError('Null is not allowed')
         file = self.__opener.open(url)
@@ -19,29 +20,29 @@ class Crawler:
         file.close()
         return file_content
 
-    def crawlHTML(self, url):
+    def crawl_HTML(self, url):
         doc = lhtml.fromstring(self.crawl(url))
         return doc
 
 
-    def crawlXML(self, url):
+    def crawl_XML(self, url):
         xmldoc = minidom.parseString(self.crawl(url))
         return xmldoc
 
-    def getHTMLInfo(self, document, rules=None):
-        if not document:
+    def get_HTML_info(self, document, rules=None):
+        if not len(document):
             raise ValueError('Document could not be null')
-        #return document.xpath('//div[@class="paginado"]/section/article/div/form/div[@class="productImg"]/a/@href')    
+
         return document.xpath(rules)
 
-    def getXMLInfo(self, document, rules=None):
+    def get_XML_info(self, document, rules=None):
         if not document:
             raise ValueError('Document could not be null')
-        #return document.xpath('//div[@class="paginado"]/section/article/div/form/div[@class="productImg"]/a/@href')
+
         return document.getElementsByTagName('loc')
 
-    def getParsedContent(self, doc):
+    def get_parsed_content(self, doc):
         return []
 
-    def getPaginationRule(self, page_number):
+    def get_pagination_rule(self, page_number):
         return ""
