@@ -1,5 +1,5 @@
 from model.home import HomePageAmericanas, HomePage, HomePageExtra
-from model.product import AmericanasProduct
+from model.product import AmericanasProduct, NetshoesProduct
 from helper.crawler import Crawler
 
 
@@ -14,27 +14,46 @@ class SitemapReader():
         self.crawler = Crawler()
 
     def run(self):
-        full_homepage_list = []
+        full_homepage = {'product' : [], 'homepage': []}
+        total_inserted = 0
         for sitemap_key in self.sitemaps:
+            total_inserted_aux = 0
             url = self.sitemaps[sitemap_key]
             localizacoes = self.searchHomeProduct(url)
-            homepage_list = self.readSitemap(localizacoes, sitemap_key)
-            full_homepage_list = full_homepage_list + homepage_list
+            content_dict = self.readSitemap(localizacoes, sitemap_key)
+            total_inserted_aux = self.save_sitemap_content(content_dict)
+            total_inserted += total_inserted_aux
+        return total_inserted
 
-        return full_homepage_list
+    def save_sitemap_content(self, content_dict):
+        total_inserted = 0
+
+        for key, content_list in content_dict.iteritems():
+            total_inserted_aux = 0
+            if content_list:
+                total_inserted_aux = len(content_list[0].save_in_bulk(content_list))
+            total_inserted += total_inserted_aux
+        return total_inserted
+
 
     def readSitemap(self, localizacoes, sitemap_key):
         homepage_list = []
+        product_list = []
+        content_sitemap = {'product': product_list, 'homepage': homepage_list}
         for local in localizacoes:
             url = local.firstChild.nodeValue
             if "xml" in url:
-                homepage_list_aux = self.readSitemap(self.searchHomeProduct(url), sitemap_key)
-                homepage_list = homepage_list + homepage_list_aux
+                content_sitemap_aux = self.readSitemap(self.searchHomeProduct(url), sitemap_key)
+                content_sitemap['product'] = content_sitemap['product'] + content_sitemap_aux['product']
+                content_sitemap['homepage'] = content_sitemap['homepage'] + content_sitemap_aux['homepage']
+            elif "/produto/" in url:
+                # apenas a Netshoes tem paginas de produto dentro do sitemap
+                product = NetshoesProduct(url=url, site="Netshoes")
+                product_list.append(product)
             else:
-                conteudo = HomePage(url=url, prioridade=10, site=sitemap_key)
-                homepage_list.append(conteudo)
-
-        return homepage_list
+                homepage = HomePage(url=url, priority=10, site=sitemap_key)
+                homepage_list.append(homepage)
+        return content_sitemap
 
     def searchHomeProduct(self, url):
         xmldoc = self.crawler.crawl_XML(url)
@@ -46,17 +65,20 @@ class SitemapReader():
 def generateHomePages():
 
 # roda sitemap gerando homepage
-#x = SitemapReader({"Extra":"http://buscando.extra.com.br/sitemap.xml" })
+    #x = SitemapReader({"Extra":"http://buscando.extra.com.br/sitemap.xml" })
 #x = SitemapReader({"Netshoes": "http://www.netshoes.com.br/sitemap.xml"})
 #x = SitemapReader({"Submarino": "http://www.submarino.com.br/sitemap_index_suba.xml"})
-#x = SitemapReader({"Americanas":"http://www.americanas.com.br/sitemap_index_acom.xml" })
+    #x = SitemapReader({"Americanas":"http://www.americanas.com.br/sitemap_index_acom.xml" })
 #ponto frio, walmart, amazon(http://www.amazon.com.br/sitemap-manual-index.xml) --> server error
     x = SitemapReader({"Americanas":"http://www.americanas.com.br/sitemap_index_acom.xml", "Extra":"http://buscando.extra.com.br/sitemap.xml", "Netshoes": "http://www.netshoes.com.br/sitemap.xml", "Submarino": "http://www.submarino.com.br/sitemap_index_suba.xml" })
-    lista = x.run()
-    persiste = HomePage()
-    persiste.save_in_bulk(lista)
+    #x = SitemapReader({"Netshoes": "http://www.netshoes.com.br/sitemap.xml"})
+    total_inserted = x.run()
+    print total_inserted
 
-#generateHomePages()
+
+generateHomePages()
+
+#db.HOMELIST_COLLETION.find({"url" : {$regex : ".*/produto/.*"}}).count()
 
 def generateProductPage():
 #roda homepage gerando produto
@@ -84,7 +106,7 @@ def generateProductPage():
 
         persistencia.save_in_bulk(product_list)
 
-generateProductPage()
+#generateProductPage()
 # a = HomePageAmericanas(url="http://www.americanas.com.br/linha/267868/informatica/notebook")
 # product_list = []
 # product_list_aux = a.parse()

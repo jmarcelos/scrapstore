@@ -2,20 +2,22 @@ from lxml import html as lhtml
 import urllib2
 from xml.dom import minidom
 
-class Crawler:
+class Crawler(object):
 
-    USER_AGENT = ('User-agent', 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)')
-    __opener = None
+    #USER_AGENT = ('User-agent', 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)')
 
-    def __init__(self):
-        self.__opener = urllib2.build_opener()
-        self.__opener.addheaders = [self.USER_AGENT]
+    #def __init__(self):
+        #self.__opener = urllib2.build_opener()
+        #self.__opener.addheaders = [self.USER_AGENT]
 
     def crawl(self, url):
+        USER_AGENT = ('User-agent', 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)')
+        opener = urllib2.build_opener()
+        opener.addheaders = [USER_AGENT]
         print url
         if not url:
             raise ValueError('Null is not allowed')
-        file = self.__opener.open(url)
+        file = opener.open(url)
         file_content = file.read()
         file.close()
         return file_content
@@ -46,3 +48,6 @@ class Crawler:
 
     def get_pagination_rule(self, page_number):
         return ""
+
+    def encode__openner(__opener):
+        return

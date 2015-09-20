@@ -10,8 +10,9 @@ class MongoCollection(object):
 
     HOMELIST_COLLETION = "HOMELIST_COLLETION"
     AMERICANAS_PRODUCTLIST_COLLETION = "AMERICANAS_PRODUCTLIST_COLLETION"
-    EXTRA_PRODUCTLIST_COLLETION = "AMERICANAS_PRODUCTLIST_COLLETION"
-    SUBMARINO_PRODUCTLIST_COLLETION = "AMERICANAS_PRODUCTLIST_COLLETION"
+    EXTRA_PRODUCTLIST_COLLETION = "EXTRA_PRODUCTLIST_COLLETION"
+    SUBMARINO_PRODUCTLIST_COLLETION = "SUBMARINO_PRODUCTLIST_COLLETION"
+    NETSHOES_PRODUCTLIST_COLLETION = "NETSHOES_PRODUCTLIST_COLLETION"
 
     def to_dict(self):
         return self.__dict__
@@ -28,6 +29,7 @@ class MongoCollection(object):
 
     def save_in_bulk(self, collection_name, content_list):
         if content_list:
+            print 'Salvando %s' % collection_name
             return self.db[collection_name].insert_many([c.to_dict() for c in content_list]).inserted_ids
 
 
