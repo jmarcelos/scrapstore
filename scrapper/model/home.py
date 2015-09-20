@@ -44,11 +44,13 @@ class HomePage(Crawler, MongoCollection):
     def get_list(self):
         super(HomePage, self).read_content()
 
-    #def __str__(self):
-        #return "Classe: %s url:%s site=%s, prioridade=%d, data_scan=%s" %(self.__class__.__name__, self.url, self.site, self.priority, self.last_scan_date)
+    def __str__(self):
+        return "Classe: %s url:%s site=%s, prioridade=%d, data_scan=%s" %(self.__class__.__name__, self.url, self.site, self.priority, self.last_scan_date)
 
-    #def __repr__(self):
-        #return self.__str__()
+    def __repr__(self):
+        return self.__str__()
+    def __hash__(self):
+        return hash(self.site) ^ hash(self.url)
 
 
 #from sitemap import HomePageAmericanas; acom = HomePageAmericanas(); acom.url = "http://www.americanas.com.br/linha/267868/informatica/notebook"; acom.parse()

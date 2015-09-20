@@ -31,6 +31,10 @@ class SitemapReader():
         for key, content_list in content_dict.iteritems():
             total_inserted_aux = 0
             if content_list:
+                print 'tudao: ' + str(len (content_list))
+                content_list = set(content_list)
+                content_list = list(content_list)
+                print 'reduzido: ' + str(len (content_list))
                 total_inserted_aux = len(content_list[0].save_in_bulk(content_list))
             total_inserted += total_inserted_aux
         return total_inserted
@@ -49,7 +53,8 @@ class SitemapReader():
             elif "/produto/" in url:
                 # apenas a Netshoes tem paginas de produto dentro do sitemap
                 product = NetshoesProduct(url=url, site="Netshoes")
-                product_list.append(product)
+                complete_product = product.parse()
+                product_list.append(complete_product)
             else:
                 homepage = HomePage(url=url, priority=10, site=sitemap_key)
                 homepage_list.append(homepage)
@@ -78,6 +83,8 @@ def generateHomePages():
 
 generateHomePages()
 
+#netshoes = NetshoesProduct(url = "http://www.netshoes.com.br/produto/cooler-internacional--12-latas-565-1259")
+#netshoes = netshoes.parse()
 #db.HOMELIST_COLLETION.find({"url" : {$regex : ".*/produto/.*"}}).count()
 
 def generateProductPage():
