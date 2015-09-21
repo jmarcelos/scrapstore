@@ -122,6 +122,9 @@ class HomePageExtra(HomePage):
         match_content = re.search(self.pattern, content)
         return match_content.group()
 
+    def to_dict(self):
+        return { "url" : self.url, "priority": self.priority, "last_scan_date": self.last_scan_date, "site": self.site}
+
 
 class HomePageNetshoes(HomePage):
 

@@ -16,6 +16,11 @@ class Product(MongoCollection, Crawler):
     last_scan_date = datetime.now().strftime("%Y-%m-%d")
     priority = None
 
+    def to_dict(self):
+        return { "url" : self.url, "id": self.id, "name": self.name, "description" : self.description,  "site": self.site,
+                 "keywords":self.keywords, "picture": self.picture, "product_history": self.produc_history.to_dict,
+                 "last_price": self.last_price, "last_scan_date": self.last_scan_date, "priority": self.priority }
+
     def __init__(self, url=None, name=None, site=None, last_price=None, last_scan_date=None, description=None, keywords=None, picture=None, product_history=None):
         self.url = url
         self.name = name
@@ -45,7 +50,7 @@ class Product(MongoCollection, Crawler):
         return  self.__str__()
 
     def __hash__(self):
-        return hash(self.id) ^ hash(self.url)    
+        return hash(self.id) ^ hash(self.url)
 
 class ProductHistory(MongoCollection):
 
@@ -55,6 +60,9 @@ class ProductHistory(MongoCollection):
     def __init__(self, price, scan_date):
         self.price = price
         self.scan_date = scan_date
+
+    def to_dict(self):
+        return {"price": self.price, "scan_date": self.scan_date}
 
 
 class AmericanasProduct(Product):
@@ -78,6 +86,7 @@ class NetshoesProduct(Product):
         self.picture = self.get_HTML_info(doc, '//head/meta[@property="og:image"]/@content')[0]
         self.product_history.append(ProductHistory(self.last_price, self.last_scan_date))
         self.id = self.get_HTML_info(doc, '//div[@class="product-buy-component "]/div[@class="product-buy-wrapper"]/div[@class="base-box buy-product-holder"]/form/input[@name="skuId"]/@value')[0].replace("-", "")
+
         return self
 
 

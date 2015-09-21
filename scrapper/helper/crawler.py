@@ -4,20 +4,21 @@ from xml.dom import minidom
 
 class Crawler(object):
 
-    #USER_AGENT = ('User-agent', 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)')
+    USER_AGENT = ('User-agent', 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)')
+    __opener = None
 
-    #def __init__(self):
-        #self.__opener = urllib2.build_opener()
-        #self.__opener.addheaders = [self.USER_AGENT]
+    def __init__(self):
+        self.__opener = urllib2.build_opener()
+        self.__opener.addheaders = [self.USER_AGENT]
 
     def crawl(self, url):
         USER_AGENT = ('User-agent', 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)')
-        opener = urllib2.build_opener()
-        opener.addheaders = [USER_AGENT]
+        self.__opener = urllib2.build_opener()
+        self.__opener.addheaders = [USER_AGENT]
         print url
         if not url:
             raise ValueError('Null is not allowed')
-        file = opener.open(url)
+        file = self.__opener.open(url)
         file_content = file.read()
         file.close()
         return file_content
@@ -40,7 +41,6 @@ class Crawler(object):
     def get_XML_info(self, document, rules=None):
         if not document:
             raise ValueError('Document could not be null')
-
         return document.getElementsByTagName('loc')
 
     def get_parsed_content(self, doc):
@@ -48,6 +48,3 @@ class Crawler(object):
 
     def get_pagination_rule(self, page_number):
         return ""
-
-    def encode__openner(__opener):
-        return

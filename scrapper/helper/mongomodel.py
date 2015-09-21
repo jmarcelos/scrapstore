@@ -15,7 +15,7 @@ class MongoCollection(object):
     NETSHOES_PRODUCTLIST_COLLETION = "NETSHOES_PRODUCTLIST_COLLETION"
 
     def to_dict(self):
-        return self.__dict__
+        return {}
 
     def save(self):
         self.db[self.__class__.__name__].insert_one(self.to_dict()).inserted_id
