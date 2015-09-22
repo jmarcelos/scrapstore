@@ -1,7 +1,7 @@
 from model.home import HomePageAmericanas, HomePage, HomePageExtra
 from model.product import AmericanasProduct, NetshoesProduct
 from helper.crawler import Crawler
-
+import sys
 
 class SitemapReader():
 
@@ -68,13 +68,16 @@ class SitemapReader():
 
 if __name__ == '__main__':
 
-    if sys.argv and sys.argv[0] == 'sitemap-read':
+    if sys.argv and sys.argv[1] == 'sitemap-read':
         #gera as homepages a partir dos sitemaps
-        print 'Opção de leitura do sitemap, iniciando geração das homes de produto'
+        print 'Opcao de leitura do sitemap, iniciando geracao das homes de produto'
         x = SitemapReader({"Americanas":"http://www.americanas.com.br/sitemap_index_acom.xml", "Extra":"http://buscando.extra.com.br/sitemap.xml", "Netshoes": "http://www.netshoes.com.br/sitemap.xml", "Submarino": "http://www.submarino.com.br/sitemap_index_suba.xml" })
         total_inserted = x.run()
-        print "Foram lidas %d páginas, que podem ser homes e página de produtos" % total_inserted
-    elif sys.argv and sys.argv[0] == 'product-read':
+        print "Foram lidas %d paginas, que podem ser homes e pagina de produtos" % total_inserted
+    elif sys.argv and sys.argv[1] == 'product-read':
+        print 'lala'
+
+    print 'terminei'
         #gera a lista de produtos a partir do sitemap
 
 
@@ -129,3 +132,22 @@ if __name__ == '__main__':
 #     product_list.append(prodAmericanas)
 #
 # print [str(prodAmericanas.id) + " - " + prodAmericanas.url for prodAmericanas in product_list]
+
+# db.HOMELIST_COLLETION.find({"url" : {$regex : ".*/celulares-e-telefones/.*"}}).count()
+# tv-e-home-theater
+# celulares-e-telefones
+# informatica
+# celulares-e-telefonia-fixa
+# tablets
+# TelefoneseCelulares
+# Eletronicos
+#
+#
+# eletrodomesticos
+# games
+# musica
+# brinquedos
+# CineFoto
+# Eletroportateis
+# Games
+# filmesemusicas
