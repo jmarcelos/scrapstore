@@ -1,8 +1,10 @@
 create: createenv
 
 createenv:
-	virtualenv env_scrapstore
-	pip install -r requirements.txt
+	test -d env_scrapstore/bin/activate || virtualenv env_scrapstore
+	env_scrapstore/bin/pip install -Ur requirements.txt
+	touch ./env_scrapstore/bin/activate
+
 
 creategit:
 	git init

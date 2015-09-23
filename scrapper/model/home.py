@@ -93,12 +93,15 @@ class HomePageExtra(HomePage):
             try:
                 doc = self.crawl_HTML(url_temp)
                 product_list_aux = self.get_parsed_content(doc)
+                if not product_list_aux:
+                    break
                 product_list = product_list + product_list_aux
-                url_temp = self.get_pagination_rule(doc)[0]
+                url_temp = self.get_pagination_rule(doc)
             except Exception, e:
                 #caso tenha ocorrido o parse em uma pagina, eu escrevo a exception e continuo
-                print e
-                raise Exception()
+                import traceback
+                print traceback.print_exc()
+                continue
 
         print "final " + str(len(product_list))
         return product_list
@@ -110,7 +113,10 @@ class HomePageExtra(HomePage):
         return zip(url_list, id_list)
 
     def get_pagination_rule(self, doc):
-        return self.get_HTML_info(doc, '//div[@id="sli_pagination_header"]/div[@class="pagination"]/ul[@class="ListaPaginas"]/li[@class="next"]/a/@href')
+        pags = self.get_HTML_info(doc, '//div[@id="sli_pagination_header"]/div[@class="pagination"]/ul[@class="ListaPaginas"]/li[@class="next"]/a/@href')
+        if pags:
+            return pags[0]
+        return
 
     def get_list(self):
         return super(HomePageExtra, self).read_content(self.HOMELIST_COLLETION, {'site': 'Extra'})
@@ -131,7 +137,7 @@ class HomePageNetshoes(HomePage):
     pagination_parameters = "?No=%d"
     quantidade_por_pagina = 60
     main_url = "http://netshoes.com.br"
-
+    page_number = 1
     def parse(self):
         url_temp = self.url
         product_list = []
@@ -143,25 +149,29 @@ class HomePageNetshoes(HomePage):
                 if not product_list_aux:
                     break
                 product_list = product_list + product_list_aux
-                url_temp = self.get_pagination_rule(doc)[0]
+                url_temp = self.get_pagination_rule(doc)
             except Exception, e:
                 #caso tenha ocorrido o parse em uma pagina, eu escrevo a exception e continuo
-                print e
-                raise Exception()
+                import traceback
+                print traceback.print_exc()
+                continue
 
         return product_list
 
-    def get_pagination_rule(self, url, page_number):
-        if page_number == 1:
-            return url
-        return url + pagination_parameters % (self.quantidade_por_pagina * page_number)
+    def get_pagination_rule(self, doc):
+        page = self.page_number
+        self.page_number +=1
+        if page == 1:
+            return self.url
+        return self.url + self.pagination_parameters % (self.quantidade_por_pagina * page)
 
 
     def get_parsed_content(self, doc):
         print 'Pegando o conteudo Netshoes'
-        url_relative_list = self.get_HTML_info(doc, '//div[@class="main-content"]/div[@class="results-wrapper"]/ul[@class="product-list"]/li/span[@class="single-product"]/a/@href')
-        products_list = self.get_HTML_info(doc, '//div[@class="main-content"]/div[@class="results-wrapper"]/ul[@class="product-list"]/li/span[@class="single-product"]/a/@product')
-        skus_list = self.__get_ids(product_list)
+        url_relative_list = self.get_HTML_info(doc, '//div[@class="main-content "]/div[@class="results-wrapper"]/ul[@class="product-list"]/li/span[@class="single-product"]/a/@href')
+        products_list = self.get_HTML_info(doc, '//div[@class="main-content "]/div[@class="results-wrapper"]/ul[@class="product-list"]/li/span[@class="single-product"]/a/@data-product')
+        url_list = self.get_full_url(url_relative_list)
+        skus_list = self.__get_ids(products_list)
         return zip(url_list, skus_list)
 
     def get_list(self):
@@ -171,7 +181,8 @@ class HomePageNetshoes(HomePage):
         return map(self.__extractor, product_list)
 
     def __extractor(self, content):
-        return content['sku']
+        #trocar por expressao regular
+        return content.split(',')[6].split(':')[1].replace('"', '').replace('-', '')
 
     def get_full_url(self, url_relative_list):
-        return map(lambda url: main_url + url,  url_relative_list)
+        return map(lambda url: self.main_url + url,  url_relative_list)

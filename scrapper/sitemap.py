@@ -1,4 +1,4 @@
-from model.home import HomePageAmericanas, HomePage, HomePageExtra
+from model.home import HomePageAmericanas, HomePage, HomePageExtra, HomePageNetshoes
 from model.product import AmericanasProduct, NetshoesProduct
 from helper.crawler import Crawler
 import sys
@@ -68,17 +68,25 @@ class SitemapReader():
 
 if __name__ == '__main__':
 
-    if sys.argv and sys.argv[1] == 'sitemap-read':
-        #gera as homepages a partir dos sitemaps
-        print 'Opcao de leitura do sitemap, iniciando geracao das homes de produto'
-        x = SitemapReader({"Americanas":"http://www.americanas.com.br/sitemap_index_acom.xml", "Extra":"http://buscando.extra.com.br/sitemap.xml", "Netshoes": "http://www.netshoes.com.br/sitemap.xml", "Submarino": "http://www.submarino.com.br/sitemap_index_suba.xml" })
-        total_inserted = x.run()
-        print "Foram lidas %d paginas, que podem ser homes e pagina de produtos" % total_inserted
-    elif sys.argv and sys.argv[1] == 'product-read':
-        print 'lala'
 
-    print 'terminei'
-        #gera a lista de produtos a partir do sitemap
+    #a = HomePageExtra(url='http://buscando.extra.com.br/loja/Lancheira%20Termica')
+    #product_list = a.parse()
+
+    a = HomePageNetshoes(url='http://www.netshoes.com.br/monitoramento-esportivo')
+    product_list = a.parse()
+    print product_list
+
+    # if sys.argv and sys.argv[1] == 'sitemap-read':
+    #     #gera as homepages a partir dos sitemaps
+    #     print 'Opcao de leitura do sitemap, iniciando geracao das homes de produto'
+    #     x = SitemapReader({"Americanas":"http://www.americanas.com.br/sitemap_index_acom.xml", "Extra":"http://buscando.extra.com.br/sitemap.xml", "Netshoes": "http://www.netshoes.com.br/sitemap.xml", "Submarino": "http://www.submarino.com.br/sitemap_index_suba.xml" })
+    #     total_inserted = x.run()
+    #     print "Foram lidas %d paginas, que podem ser homes e pagina de produtos" % total_inserted
+    # elif sys.argv and sys.argv[1] == 'product-read':
+    #     print 'Inicia o processo de leitura das homes para gerar as paginas e produto'
+    #
+    # print 'terminei'
+    #     #gera a lista de produtos a partir do sitemap
 
 
 
