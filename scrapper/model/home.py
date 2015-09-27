@@ -1,6 +1,7 @@
 import re
 from helper.mongomodel import MongoCollection
 from helper.crawler import Crawler
+from datetime import datetime
 
 
 class HomePage(Crawler, MongoCollection):
@@ -23,6 +24,7 @@ class HomePage(Crawler, MongoCollection):
         product_list = []
         while True:
             url = self.url + "?" + self.get_pagination_rule(page_number)
+            page_number += 1
             try:
                 doc = self.crawl_HTML(url)
                 product_list_aux = self.get_parsed_content(doc)
@@ -34,16 +36,17 @@ class HomePage(Crawler, MongoCollection):
                 print e
                 continue
 
-            page_number += 1
         print "final " + str(len(product_list))
         return product_list
 
     def save_in_bulk(self,content_list):
         return super(HomePage, self).save_in_bulk(self.HOMELIST_COLLETION, content_list)
 
-    def get_list(self):
-        super(HomePage, self).read_content()
+    def save(self):
+        return super(HomePage, self).save(self.HOMELIST_COLLETION)
 
+    def scanned(self):
+        self.last_scan_date = datetime.now().strftime("%Y-%m-%d")
     def __str__(self):
         return "Classe: %s url:%s site=%s, prioridade=%d, data_scan=%s" %(self.__class__.__name__, self.url, self.site, self.priority, self.last_scan_date)
 
@@ -71,13 +74,13 @@ class HomePageAmericanas(HomePage):
         return "ofertas.limit=%s&ofertas.offset=%s" % (self.quantidade_por_pagina, self.quantidade_por_pagina * page_number)
 
     def get_list(self):
-        return super(HomePageAmericanas, self).read_content(self.HOMELIST_COLLETION, {'site': 'Americanas'})
+        return super(HomePageAmericanas, self).read_content(collection_name = self.HOMELIST_COLLETION, parameters = {'site': 'Americanas'}, sorting = "priority")
 
 
 class HomePageSubmarino(HomePageAmericanas):
 
     def get_list(self):
-        return super(HomePageSubmarino, self).read_content(self.HOMELIST_COLLETION, {'site': 'Submarino'})
+        return super(HomePageSubmarino, self).read_content(collection_name = self.HOMELIST_COLLETION, parameters = {'site': 'Submarino'}, sorting = "priority")
 
 
 class HomePageExtra(HomePage):
@@ -119,7 +122,7 @@ class HomePageExtra(HomePage):
         return
 
     def get_list(self):
-        return super(HomePageExtra, self).read_content(self.HOMELIST_COLLETION, {'site': 'Extra'})
+        return super(HomePageExtra, self).read_content(collection_name = self.HOMELIST_COLLETION, parameters = {'site': 'Extra'}, sorting = 'priority')
 
     def __get_ids(self, title_list):
         return map(self.__extractor, title_list)
@@ -175,7 +178,7 @@ class HomePageNetshoes(HomePage):
         return zip(url_list, skus_list)
 
     def get_list(self):
-        return super(HomePageNetShoes, self).read_content(self.HOMELIST_COLLETION, {'site': 'NetShoes'})
+        return super(HomePageNetShoes, self).read_content(collection_name = self.HOMELIST_COLLETION, parameters = {'site': 'NetShoes'}, sorting = 'priority')
 
     def __get_ids(self, product_list):
         return map(self.__extractor, product_list)

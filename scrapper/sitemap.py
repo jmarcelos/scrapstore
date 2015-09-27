@@ -68,40 +68,51 @@ class SitemapReader():
 
 if __name__ == '__main__':
 
+    sites = {"Americanas":"http://www.americanas.com.br/sitemap_index_acom.xml",
+            "Extra":"http://buscando.extra.com.br/sitemap.xml",
+            "Netshoes": "http://www.netshoes.com.br/sitemap.xml",
+            "Submarino": "http://www.submarino.com.br/sitemap_index_suba.xml" }
+    if sys.argv and sys.argv[1] == 'sitemap-read':
+        #gera as homepages a partir dos sitemaps
+        try:
+            sitemap = sites[sys.argv[2]]
+            print "Opcao de leitura do sitemap, iniciando geracao das homes de produto do site %s" % sitemap
+            x = SitemapReader({sys.argv[2]: sitemap})
+            total_inserted = x.run()
+            print "Foram lidas %d paginas, que podem ser homes e pagina de produtos" % total_inserted
+        except Exception:
+            print  'Formato de sitemap nao conhecido'
+    elif sys.argv and sys.argv[1] == 'product-read':
+        print "Inicia o processo de leitura das homes %s para gerar as paginas e produto" % sys.argv[2]
 
-    #a = HomePageExtra(url='http://buscando.extra.com.br/loja/Lancheira%20Termica')
-    #product_list = a.parse()
+        module_path = "model.home"
+        class_name = sys.argv[2]
+        try:
+            if class_name:
+                module = __import__(module_path, fromlist=[class_name])
+        except ImportError:
+            raise ValueError("Module %s could not be imported" % (module_path))
 
-    a = HomePageNetshoes(url='http://www.netshoes.com.br/monitoramento-esportivo')
-    product_list = a.parse()
-    print product_list
+        try:
+            cls_ = getattr(module, class_name)
+        except AttributeError:
+            raise ValueError("Module %s has no class %s" % (module_path, class_name))
 
-    # if sys.argv and sys.argv[1] == 'sitemap-read':
-    #     #gera as homepages a partir dos sitemaps
-    #     print 'Opcao de leitura do sitemap, iniciando geracao das homes de produto'
-    #     x = SitemapReader({"Americanas":"http://www.americanas.com.br/sitemap_index_acom.xml", "Extra":"http://buscando.extra.com.br/sitemap.xml", "Netshoes": "http://www.netshoes.com.br/sitemap.xml", "Submarino": "http://www.submarino.com.br/sitemap_index_suba.xml" })
-    #     total_inserted = x.run()
-    #     print "Foram lidas %d paginas, que podem ser homes e pagina de produtos" % total_inserted
-    # elif sys.argv and sys.argv[1] == 'product-read':
-    #     print 'Inicia o processo de leitura das homes para gerar as paginas e produto'
-    #
-    # print 'terminei'
-    #     #gera a lista de produtos a partir do sitemap
+        home_page = cls_()
+        homepage_list = home_page.get_list()
+        import pdb; pdb.set_trace()
+        for home in homepage_list:
+            home_page.url = home['url']
+            product_list_aux = home_page.parse()
+
+            home_page.scanned().save()
 
 
 
-# roda sitemap gerando homepage
-#x = SitemapReader({"Extra":"http://buscando.extra.com.br/sitemap.xml" })
-#x = SitemapReader({"Netshoes": "http://www.netshoes.com.br/sitemap.xml"})
-#x = SitemapReader({"Submarino": "http://www.submarino.com.br/sitemap_index_suba.xml"})
-#x = SitemapReader({"Americanas":"http://www.americanas.com.br/sitemap_index_acom.xml" })
-#ponto frio, walmart, amazon(http://www.amazon.com.br/sitemap-manual-index.xml) --> server error
-#x = SitemapReader({"Netshoes": "http://www.netshoes.com.br/sitemap.xml"})
-#total_inserted = x.run()
-#print total_inserted
-#netshoes = NetshoesProduct(url = "http://www.netshoes.com.br/produto/cooler-internacional--12-latas-565-1259")
-#netshoes = netshoes.parse()
-#db.HOMELIST_COLLETION.find({"url" : {$regex : ".*/produto/.*"}}).count()
+
+        #gera a lista de produtos a partir do sitemap
+
+
 
 # def generateProductPage():
 # #roda homepage gerando produto
@@ -140,22 +151,3 @@ if __name__ == '__main__':
 #     product_list.append(prodAmericanas)
 #
 # print [str(prodAmericanas.id) + " - " + prodAmericanas.url for prodAmericanas in product_list]
-
-# db.HOMELIST_COLLETION.find({"url" : {$regex : ".*/celulares-e-telefones/.*"}}).count()
-# tv-e-home-theater
-# celulares-e-telefones
-# informatica
-# celulares-e-telefonia-fixa
-# tablets
-# TelefoneseCelulares
-# Eletronicos
-#
-#
-# eletrodomesticos
-# games
-# musica
-# brinquedos
-# CineFoto
-# Eletroportateis
-# Games
-# filmesemusicas

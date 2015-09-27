@@ -27,3 +27,9 @@ function(doc){
     doc.priority = 5;
     db.HOMELIST_COLLETION.save(doc);
 });
+
+
+db.HOMELIST_COLLETION.find().forEach(
+  function(doc){
+      doc.last_scan_date = new ISODate("25-09-2015");
+      db.HOMELIST_COLLETION.save(doc)});
