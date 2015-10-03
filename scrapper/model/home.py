@@ -1,23 +1,16 @@
 import re
-from helper.mongomodel import MongoCollection
 from helper.crawler import Crawler
 from datetime import datetime
 
 
-class HomePage(Crawler, MongoCollection):
+class HomePage(Crawler, Document):
 
-    url = None
-    priority = 0
-    last_scan_date = None
-    site = None
+    url = StringField(max_length=250, required=True, primary_key=True)
+    priority = IntField(default=10)
+    last_scan_date = DateTimeField()
+    site = StringField(max_length=20, required=True)
 
-    def __init__(self, url=None, site=None, priority=10, last_scan_date=None):
-        self.url = url
-        self.priority = priority
-        self.last_scan_date = last_scan_date
-        self.site = site
-
-        Crawler.__init__(self)
+    meta = {'collection': 'HOMELIST_COLLETION', 'allow_inheritance': True}
 
     def parse(self):
         page_number = 1
@@ -39,14 +32,9 @@ class HomePage(Crawler, MongoCollection):
         print "final " + str(len(product_list))
         return product_list
 
-    def save_in_bulk(self,content_list):
-        return super(HomePage, self).save_in_bulk(self.HOMELIST_COLLETION, content_list)
-
-    def save(self):
-        return super(HomePage, self).save(self.HOMELIST_COLLETION)
-
     def scanned(self):
         self.last_scan_date = datetime.now().strftime("%Y-%m-%d")
+
     def __str__(self):
         return "Classe: %s url:%s site=%s, prioridade=%d, data_scan=%s" %(self.__class__.__name__, self.url, self.site, self.priority, self.last_scan_date)
 
@@ -62,6 +50,8 @@ class HomePageAmericanas(HomePage):
 
     pagination_parameters = "ofertas.limit=%s&ofertas.offset=%s"
     quantidade_por_pagina = 90
+
+    meta = {'collection': 'HOMELIST_COLLETION', 'allow_inheritance': True}
 
     def get_parsed_content(self, doc):
         url_list = self.get_HTML_info(doc, '//div[@class="paginado"]/section/article/div/form/div[@class="productImg"]/a/@href')
@@ -113,6 +103,7 @@ class HomePageExtra(HomePage):
         url_list = self.get_HTML_info(doc, '//div[@class="prateleira"]/ul[@class="vitrineProdutos"]/li/div[@class="hproduct"]/a/@href')
         title_list = self.get_HTML_info(doc, '//div[@class="prateleira"]/ul[@class="vitrineProdutos"]/li/div[@class="hproduct"]/a/@title')
         id_list = self.__get_ids(title_list)
+        print zip(url_list, id_list)
         return zip(url_list, id_list)
 
     def get_pagination_rule(self, doc):

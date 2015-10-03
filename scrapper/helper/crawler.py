@@ -1,21 +1,15 @@
 from lxml import html as lhtml
 import urllib2
 from xml.dom import minidom
+from mongoengine import *
 
 class Crawler(object):
-
+    
     USER_AGENT = ('User-agent', 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)')
-    __opener = None
-
-    def __init__(self):
-        self.__opener = urllib2.build_opener()
-        self.__opener.addheaders = [self.USER_AGENT]
+    __opener = urllib2.build_opener()
+    __opener.addheaders = [USER_AGENT]
 
     def crawl(self, url):
-        USER_AGENT = ('User-agent', 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)')
-        self.__opener = urllib2.build_opener()
-        self.__opener.addheaders = [USER_AGENT]
-        print url
         if not url:
             raise ValueError('Null is not allowed')
         file = self.__opener.open(url)

@@ -1,4 +1,4 @@
-from model.home import HomePageAmericanas, HomePage, HomePageExtra, HomePageNetshoes
+from model.home2 import HomePageAmericanas, HomePage, HomePageExtra, HomePageNetshoes
 from model.product import AmericanasProduct, NetshoesProduct
 from helper.crawler import Crawler
 import sys
@@ -34,7 +34,10 @@ class SitemapReader():
                 content_list = set(content_list)
                 content_list = list(content_list)
                 print 'reduzido: ' + str(len (content_list))
-                total_inserted_aux = len(content_list[0].save_in_bulk(content_list))
+                if key == 'homepage':
+                    total_inserted_aux = len(HomePage.objects.insert(content_list))
+                else:
+                    total_inserted_aux = len(NetshoesProduct.objects.insert(content_list))
             total_inserted += total_inserted_aux
         return total_inserted
 
@@ -74,14 +77,11 @@ if __name__ == '__main__':
             "Submarino": "http://www.submarino.com.br/sitemap_index_suba.xml" }
     if sys.argv and sys.argv[1] == 'sitemap-read':
         #gera as homepages a partir dos sitemaps
-        try:
-            sitemap = sites[sys.argv[2]]
-            print "Opcao de leitura do sitemap, iniciando geracao das homes de produto do site %s" % sitemap
-            x = SitemapReader({sys.argv[2]: sitemap})
-            total_inserted = x.run()
-            print "Foram lidas %d paginas, que podem ser homes e pagina de produtos" % total_inserted
-        except Exception:
-            print  'Formato de sitemap nao conhecido'
+        sitemap = sites[sys.argv[2]]
+        print "Opcao de leitura do sitemap, iniciando geracao das homes de produto do site %s" % sitemap
+        x = SitemapReader({sys.argv[2]: sitemap})
+        total_inserted = x.run()
+        print "Foram lidas %d paginas, que podem ser homes e pagina de produtos" % total_inserted
     elif sys.argv and sys.argv[1] == 'product-read':
         print "Inicia o processo de leitura das homes %s para gerar as paginas e produto" % sys.argv[2]
 
@@ -105,7 +105,7 @@ if __name__ == '__main__':
             home_page.url = home['url']
             product_list_aux = home_page.parse()
 
-            home_page.scanned().save()
+            #home_page.scanned().save()
 
 
 

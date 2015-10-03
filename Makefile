@@ -5,7 +5,15 @@ createenv:
 	env_scrapstore/bin/pip install -Ur requirements.txt
 	touch ./env_scrapstore/bin/activate
 
-sitemap-acmm:
+
+sitemap-all:
+	sitemap-acom
+	sitemap-sub
+	sitemap-extra
+	sitemap-netshoes
+
+
+sitemap-acom:
 	python scrapper/sitemap.py sitemap-read Americanas
 
 sitemap-sub:
