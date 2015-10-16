@@ -7,7 +7,7 @@ from product import *
 
 class HomePage(Crawler, Document):
 
-    url = StringField(max_length=250, required=True, primary_key=True)
+    url = StringField(max_length=250, required=True, unique=True)
     priority = IntField(default=10)
     last_scan_date = DateTimeField()
     site = StringField(max_length=20, required=True)
@@ -20,15 +20,12 @@ class HomePage(Crawler, Document):
     def generate_product_list(self, url_id_list):
         raise NotImplementedError()
 
-    def get_products(self):
+    @staticmethod
+    def get_products():
         return self.__class__.objects()
 
-    # def add_products(self, products):
-    #     self.__class__.objects.insert(products)
-    #     return len(products)
-
-
-    def add_products(self, product_list):
+    @staticmethod
+    def add_products(product_list):
         i = 0
         for product in product_list:
             try:
@@ -36,6 +33,7 @@ class HomePage(Crawler, Document):
                 i+=1
             except Exception:
                 continue
+        print "Tentativa de inserir %d registros, mas foram inseridos %d" % (len(product_list), i)
         return i
 
     def scanned(self):
@@ -59,10 +57,12 @@ class HomePageAmericanas(HomePage):
     meta = {'allow_inheritance': True}
 
     def parse(self):
-        page_number = 1
+        page_number = 0
         product_list = []
+
         while True:
             url = self.url + "?" + self.get_pagination_rule(page_number)
+            print url
             page_number += 1
             try:
                 doc = self.crawl_HTML(url)
@@ -84,7 +84,7 @@ class HomePageAmericanas(HomePage):
         return zip(url_list, id_list)
 
     def get_pagination_rule(self, page_number):
-        if page_number == 1:
+        if page_number < 1:
             return "ofertas.limit=%s" % self.quantidade_por_pagina
         return "ofertas.limit=%s&ofertas.offset=%s" % (self.quantidade_por_pagina, self.quantidade_por_pagina * page_number)
 
@@ -95,6 +95,7 @@ class HomePageAmericanas(HomePage):
             americanas = AmericanasProduct(id=content[1], url=content[0])
             product_list.append(americanas)
 
+        print "Retornando %d produtos" % len(product_list)
         return product_list
 
 

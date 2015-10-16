@@ -1,3 +1,4 @@
+# coding=utf-8
 from datetime import datetime
 from helper.crawler import Crawler
 from mongoengine import *
@@ -28,7 +29,7 @@ class Product(Document, Crawler):
     priority = IntField(default=10)
 
 
-    meta = {'collection': 'PRODUCT_COLLECTION', 'allow_inheritance': True}
+    meta = {'collection': 'PRODUCT_COLLECTION', 'allow_inheritance': True, 'abstract': True}
 
 
     def to_dict(self):
@@ -45,6 +46,9 @@ class Product(Document, Crawler):
                 print e
         return self
 
+    def get_parsed_content(self, doc):
+        raise NotImplementedError()
+
     def __str__(self):
         return "%s(prod_id=%s, nome=%s, site=%s, url=%s, last_scan_date=%s)" % (self.__class__.__name__,self.prod_id, self.name, self.site, self.url, str(self.last_scan_date))
 
@@ -56,7 +60,21 @@ class Product(Document, Crawler):
 
 
 class AmericanasProduct(Product):
-    pass
+    meta = {'collection': 'PRODUCT_AMERICANAS_COLLECTION', 'allow_inheritance': True, 'abstract': True}
+
+    def get_parsed_content(self, doc):
+        self.name = self.get_HTML_info(doc, '//div[@class="mp-title"]/h1/@title')[0]
+        self.site='Americanas'
+        self.last_price = self.get_HTML_info(doc, '//div[@class="mp-pricebox-wrp"]/@data-price')[0]
+        self.last_price = Decimal(self.last_price)
+        self.last_scan_date = datetime.now()
+        self.description = self.get_HTML_info(doc, '//head/meta[@name="description"]/@content')[0]
+        self.keywords = self.get_HTML_info(doc, '//head/meta[@name="keywords"]/@content')[0].split(',')
+        self.picture = self.get_HTML_info(doc, '//div/div/div/div/ul[@class="a-carousel-list"]/li/img/@src')[0]
+        self.product_history.append(ProductHistory(price=self.last_price))
+        self.prod_id = self.get_HTML_info(doc, '//div[@class="mp-pricebox-wrp"]/@data-sku')[0]
+
+        return self
 
 
 class NetshoesProduct(Product):
@@ -64,7 +82,7 @@ class NetshoesProduct(Product):
     pattern = '([0-9]+.[0-9]+)'
 
     def get_parsed_content(self, doc):
-        self.name = self.get_HTML_info(doc, '//head/meta[@name="title"]/@content')[0]#tem que sliptar por |
+        self.name = self.get_HTML_info(doc, '//head/meta[@name="title"]/@content')[0].encode("UTF-8") #tem que sliptar por |
         self.name, trash = self.name.split('|')
         self.name = self.name.strip()
         self.site='Netshoes'
@@ -80,7 +98,20 @@ class NetshoesProduct(Product):
 
 
 class SubmarinoProduct(Product):
-    pass
+
+    def get_parsed_content(self, doc):
+        self.name = self.get_HTML_info(doc, '//div[@class="mp-title"]/h1/@title')[0]
+        self.site='Americanas'
+        self.last_price = self.get_HTML_info(doc, '//div[@class="mp-pricebox-wrp"]/@data-price')[0]
+        self.last_price = Decimal(self.last_price)
+        self.last_scan_date = datetime.now()
+        self.description = self.get_HTML_info(doc, '//head/meta[@name="description"]/@content')[0]
+        self.keywords = self.get_HTML_info(doc, '//head/meta[@name="keywords"]/@content')[0].split(',')
+        self.picture = self.get_HTML_info(doc, '//div/div/div/div/ul[@class="a-carousel-list"]/li/img/@src')[0]
+        self.product_history.append(ProductHistory(price=self.last_price))
+        self.prod_id = self.get_HTML_info(doc, '//div[@class="mp-pricebox-wrp"]/@data-sku')[0]
+
+        return self
 
 class ExtraProduct(Product):
     pass

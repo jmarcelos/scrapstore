@@ -4,7 +4,7 @@ from xml.dom import minidom
 from mongoengine import *
 
 class Crawler(object):
-    
+
     USER_AGENT = ('User-agent', 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)')
     __opener = urllib2.build_opener()
     __opener.addheaders = [USER_AGENT]
@@ -13,7 +13,7 @@ class Crawler(object):
         if not url:
             raise ValueError('Null is not allowed')
         file = self.__opener.open(url)
-        file_content = file.read()
+        file_content = file.read().decode('utf-8')
         file.close()
         return file_content
 
