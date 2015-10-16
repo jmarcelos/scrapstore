@@ -6,11 +6,7 @@ createenv:
 	touch ./env_scrapstore/bin/activate
 
 
-sitemap-all:
-	sitemap-acom
-	sitemap-sub
-	sitemap-extra
-	sitemap-netshoes
+sitemap-all: sitemap-acom sitemap-sub sitemap-extra sitemap-netshoes
 
 
 sitemap-acom:

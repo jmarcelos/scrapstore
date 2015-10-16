@@ -1,6 +1,8 @@
 import re
 from helper.crawler import Crawler
 from datetime import datetime
+from mongoengine import *
+from product import *
 
 
 class HomePage(Crawler, Document):
@@ -11,6 +13,50 @@ class HomePage(Crawler, Document):
     site = StringField(max_length=20, required=True)
 
     meta = {'collection': 'HOMELIST_COLLETION', 'allow_inheritance': True}
+
+    def parse(self):
+        raise NotImplementedError()
+
+    def generate_product_list(self, url_id_list):
+        raise NotImplementedError()
+
+    def get_products(self):
+        return self.__class__.objects()
+
+    # def add_products(self, products):
+    #     self.__class__.objects.insert(products)
+    #     return len(products)
+
+
+    def add_products(self, product_list):
+        i = 0
+        for product in product_list:
+            try:
+                product.save()
+                i+=1
+            except Exception:
+                continue
+        return i
+
+    def scanned(self):
+        self.last_scan_date = datetime.now().strftime("%Y-%m-%d")
+
+    def __str__(self):
+        return "Classe: %s url:%s site=%s, prioridade=%d, data_scan=%s" %(self.__class__.__name__, self.url, self.site, self.priority, self.last_scan_date)
+
+    def __repr__(self):
+        return self.__str__()
+    def __hash__(self):
+        return hash(self.site) ^ hash(self.url)
+
+#from sitemap import HomePageAmericanas; acom = HomePageAmericanas(); acom.url = "http://www.americanas.com.br/linha/267868/informatica/notebook"; acom.parse()
+
+class HomePageAmericanas(HomePage):
+
+    pagination_parameters = "ofertas.limit=%s&ofertas.offset=%s"
+    quantidade_por_pagina = 90
+
+    meta = {'allow_inheritance': True}
 
     def parse(self):
         page_number = 1
@@ -30,28 +76,7 @@ class HomePage(Crawler, Document):
                 continue
 
         print "final " + str(len(product_list))
-        return product_list
-
-    def scanned(self):
-        self.last_scan_date = datetime.now().strftime("%Y-%m-%d")
-
-    def __str__(self):
-        return "Classe: %s url:%s site=%s, prioridade=%d, data_scan=%s" %(self.__class__.__name__, self.url, self.site, self.priority, self.last_scan_date)
-
-    def __repr__(self):
-        return self.__str__()
-    def __hash__(self):
-        return hash(self.site) ^ hash(self.url)
-
-
-#from sitemap import HomePageAmericanas; acom = HomePageAmericanas(); acom.url = "http://www.americanas.com.br/linha/267868/informatica/notebook"; acom.parse()
-
-class HomePageAmericanas(HomePage):
-
-    pagination_parameters = "ofertas.limit=%s&ofertas.offset=%s"
-    quantidade_por_pagina = 90
-
-    meta = {'collection': 'HOMELIST_COLLETION', 'allow_inheritance': True}
+        return self.generate_product_list(product_list)
 
     def get_parsed_content(self, doc):
         url_list = self.get_HTML_info(doc, '//div[@class="paginado"]/section/article/div/form/div[@class="productImg"]/a/@href')
@@ -63,14 +88,20 @@ class HomePageAmericanas(HomePage):
             return "ofertas.limit=%s" % self.quantidade_por_pagina
         return "ofertas.limit=%s&ofertas.offset=%s" % (self.quantidade_por_pagina, self.quantidade_por_pagina * page_number)
 
-    def get_list(self):
-        return super(HomePageAmericanas, self).read_content(collection_name = self.HOMELIST_COLLETION, parameters = {'site': 'Americanas'}, sorting = "priority")
+    def generate_product_list(self, url_id_list):
+        product_list = []
+
+        for content in url_id_list:
+            americanas = AmericanasProduct(id=content[1], url=content[0])
+            product_list.append(americanas)
+
+        return product_list
 
 
 class HomePageSubmarino(HomePageAmericanas):
 
-    def get_list(self):
-        return super(HomePageSubmarino, self).read_content(collection_name = self.HOMELIST_COLLETION, parameters = {'site': 'Submarino'}, sorting = "priority")
+    def get_products(self):
+        return SubmarinoProduct.objects()
 
 
 class HomePageExtra(HomePage):
@@ -81,7 +112,6 @@ class HomePageExtra(HomePage):
     def parse(self):
         url_temp = self.url
         product_list = []
-
         while url_temp:
             try:
                 doc = self.crawl_HTML(url_temp)
@@ -97,13 +127,22 @@ class HomePageExtra(HomePage):
                 continue
 
         print "final " + str(len(product_list))
+        return self.generate_product_list(product_list)
+
+    def generate_product_list(self, url_id_list):
+        product_list = []
+
+        for content in url_id_list:
+            extra = ExtraProduct(url=content[0], prod_id=content[1])
+            product_list.append(extra)
+
+        print 'retornando lista de produtos'
         return product_list
 
     def get_parsed_content(self, doc):
         url_list = self.get_HTML_info(doc, '//div[@class="prateleira"]/ul[@class="vitrineProdutos"]/li/div[@class="hproduct"]/a/@href')
         title_list = self.get_HTML_info(doc, '//div[@class="prateleira"]/ul[@class="vitrineProdutos"]/li/div[@class="hproduct"]/a/@title')
         id_list = self.__get_ids(title_list)
-        print zip(url_list, id_list)
         return zip(url_list, id_list)
 
     def get_pagination_rule(self, doc):
@@ -111,9 +150,6 @@ class HomePageExtra(HomePage):
         if pags:
             return pags[0]
         return
-
-    def get_list(self):
-        return super(HomePageExtra, self).read_content(collection_name = self.HOMELIST_COLLETION, parameters = {'site': 'Extra'}, sorting = 'priority')
 
     def __get_ids(self, title_list):
         return map(self.__extractor, title_list)
@@ -150,7 +186,7 @@ class HomePageNetshoes(HomePage):
                 print traceback.print_exc()
                 continue
 
-        return product_list
+        return self.generate_product_list(product_list)
 
     def get_pagination_rule(self, doc):
         page = self.page_number
@@ -167,9 +203,6 @@ class HomePageNetshoes(HomePage):
         url_list = self.get_full_url(url_relative_list)
         skus_list = self.__get_ids(products_list)
         return zip(url_list, skus_list)
-
-    def get_list(self):
-        return super(HomePageNetShoes, self).read_content(collection_name = self.HOMELIST_COLLETION, parameters = {'site': 'NetShoes'}, sorting = 'priority')
 
     def __get_ids(self, product_list):
         return map(self.__extractor, product_list)

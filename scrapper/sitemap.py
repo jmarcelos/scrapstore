@@ -1,4 +1,4 @@
-from model.home2 import HomePageAmericanas, HomePage, HomePageExtra, HomePageNetshoes
+from model.home import HomePageAmericanas, HomePage, HomePageExtra, HomePageNetshoes
 from model.product import AmericanasProduct, NetshoesProduct
 from helper.crawler import Crawler
 import sys
@@ -68,6 +68,23 @@ class SitemapReader():
         return urls
 
 
+class HomePageReader(object):
+
+    def read_content(self, homepage):
+
+        subscribed_products = set(homepage.get_products())
+
+        product_list = []
+        for home in HomePageExtra.objects():
+            product_list.extend(home.parse())
+
+        new_products_set = set(product_list) - subscribed_products
+        new_products_list = list(new_products_set)
+        print homepage.add_products(new_products_list)
+        return
+
+
+
 
 if __name__ == '__main__':
 
@@ -98,15 +115,7 @@ if __name__ == '__main__':
         except AttributeError:
             raise ValueError("Module %s has no class %s" % (module_path, class_name))
 
-        home_page = cls_()
-        homepage_list = home_page.get_list()
-        import pdb; pdb.set_trace()
-        for home in homepage_list:
-            home_page.url = home['url']
-            product_list_aux = home_page.parse()
-
-            #home_page.scanned().save()
-
+            homepage = cls_()
 
 
 
