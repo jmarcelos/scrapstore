@@ -1,1 +1,12 @@
-virtualenv==13.1.2
+argparse==1.4.0
+lxml==3.4.4
+mongoengine==0.10.0
+pbr==0.10.0
+pycurl==7.19.5.1
+pymongo==3.0.3
+stevedore==1.1.0
+virtualenv==1.11.6
+virtualenv-clone==0.2.5
+virtualenvwrapper==4.3.1
+wget==2.2
+wsgiref==0.1.2
