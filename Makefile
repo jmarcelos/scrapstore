@@ -41,7 +41,7 @@ home-read-netshoes:
 home-read-extra:
 	python scrapper/sitemap.py product-read Submarino
 
-	
+
 
 update-product-all: update-product-americanas update-product-submarino update-product-extra update-product-netshoes
 
