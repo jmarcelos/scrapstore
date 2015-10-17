@@ -27,11 +27,14 @@ class HomePage(Crawler, Document):
     @staticmethod
     def add_products(product_list):
         i = 0
+        import pdb; pdb.set_trace()
         for product in product_list:
             try:
                 product.save()
                 i+=1
             except Exception:
+                import traceback
+                traceback.print_exc()
                 continue
         print "Tentativa de inserir %d registros, mas foram inseridos %d" % (len(product_list), i)
         return i
@@ -92,7 +95,7 @@ class HomePageAmericanas(HomePage):
         product_list = []
 
         for content in url_id_list:
-            americanas = AmericanasProduct(id=content[1], url=content[0])
+            americanas = AmericanasProduct(id=content[1], url=content[0], site='Americanas')
             product_list.append(americanas)
 
         print "Retornando %d produtos" % len(product_list)
@@ -134,7 +137,7 @@ class HomePageExtra(HomePage):
         product_list = []
 
         for content in url_id_list:
-            extra = ExtraProduct(url=content[0], prod_id=content[1])
+            extra = ExtraProduct(url=content[0], prod_id=content[1], site='Extra')
             product_list.append(extra)
 
         print 'retornando lista de produtos'

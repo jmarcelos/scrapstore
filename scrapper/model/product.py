@@ -60,7 +60,7 @@ class Product(Document, Crawler):
 
 
 class AmericanasProduct(Product):
-    meta = {'collection': 'PRODUCT_AMERICANAS_COLLECTION', 'allow_inheritance': True, 'abstract': True}
+    meta = {'collection': 'PRODUCT_AMERICANAS_COLLECTION'}
 
     def get_parsed_content(self, doc):
         self.name = self.get_HTML_info(doc, '//div[@class="mp-title"]/h1/@title')[0]

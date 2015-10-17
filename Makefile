@@ -5,9 +5,10 @@ createenv:
 	env_scrapstore/bin/pip install -Ur requirements.txt
 	touch ./env_scrapstore/bin/activate
 
+install-amazon:
+	sudo yum install -y gcc libcurl-devel openssl-devel libxml2 libxml2-devel libxslt libxslt-devel
 
 sitemap-all: sitemap-acom sitemap-sub sitemap-extra sitemap-netshoes
-
 
 sitemap-acom:
 	python scrapper/sitemap.py sitemap-read Americanas

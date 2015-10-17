@@ -96,7 +96,7 @@ class HomePageReader(object):
         new_products_set = set(product_list)
         new_products_list = list(new_products_set)
 
-        print "Foram lidos %d" % len(homepage_class_name.add_products(new_products_list))
+        print "Foram lidos %d" % homepage_class_name.add_products(new_products_list)
         return
 
 
