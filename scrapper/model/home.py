@@ -3,6 +3,7 @@ from helper.crawler import Crawler
 from datetime import datetime
 from mongoengine import *
 from product import *
+import logging
 
 
 class HomePage(Crawler, Document):
@@ -27,16 +28,14 @@ class HomePage(Crawler, Document):
     @staticmethod
     def add_products(product_list):
         i = 0
-        import pdb; pdb.set_trace()
         for product in product_list:
             try:
                 product.save()
                 i+=1
-            except Exception:
-                import traceback
-                traceback.print_exc()
-                continue
-        print "Tentativa de inserir %d registros, mas foram inseridos %d" % (len(product_list), i)
+            except Exception as e:
+                logging.error(e)
+
+        logging.debug("Tentativa de inserir %d registros, mas foram inseridos %d", len(product_list), i)
         return i
 
     def scanned(self):
@@ -60,12 +59,13 @@ class HomePageAmericanas(HomePage):
     meta = {'allow_inheritance': True}
 
     def parse(self):
+        logging.debug('Iniciando parser americanas')
         page_number = 0
         product_list = []
 
         while True:
             url = self.url + "?" + self.get_pagination_rule(page_number)
-            print url
+            logging.debug(url)
             page_number += 1
             try:
                 doc = self.crawl_HTML(url)
@@ -75,10 +75,10 @@ class HomePageAmericanas(HomePage):
                 product_list = product_list + product_list_aux
             except Exception, e:
                 #caso tenha ocorrido o parse em uma pagina, eu escrevo a exception e continuo
-                print e
-                continue
+                logging.error(e)
 
-        print "final " + str(len(product_list))
+
+        logging.debug("Homes parseadas, lidos  %d produtos", len(product_list))
         return self.generate_product_list(product_list)
 
     def get_parsed_content(self, doc):
@@ -95,17 +95,23 @@ class HomePageAmericanas(HomePage):
         product_list = []
 
         for content in url_id_list:
-            americanas = AmericanasProduct(id=content[1], url=content[0], site='Americanas')
+            americanas = AmericanasProduct(prod_id=content[1], url=content[0], site='Americanas')
             product_list.append(americanas)
 
-        print "Retornando %d produtos" % len(product_list)
+        logging.debug("Retornando %d produtos", len(product_list))
         return product_list
 
 
 class HomePageSubmarino(HomePageAmericanas):
+    def generate_product_list(self, url_id_list):
+        product_list = []
 
-    def get_products(self):
-        return SubmarinoProduct.objects()
+        for content in url_id_list:
+            americanas = SubmarinoProduct(prod_id=content[1], url=content[0], site='Americanas')
+            product_list.append(americanas)
+
+        logging.debug("Retornando %d produtos", len(product_list))
+        return product_list
 
 
 class HomePageExtra(HomePage):
@@ -126,11 +132,10 @@ class HomePageExtra(HomePage):
                 url_temp = self.get_pagination_rule(doc)
             except Exception, e:
                 #caso tenha ocorrido o parse em uma pagina, eu escrevo a exception e continuo
-                import traceback
-                print traceback.print_exc()
-                continue
+                logging.error(e)
 
-        print "final " + str(len(product_list))
+
+        logging.debug("Homes parseadas, lidos  %d produtos", len(product_list))
         return self.generate_product_list(product_list)
 
     def generate_product_list(self, url_id_list):
@@ -140,7 +145,7 @@ class HomePageExtra(HomePage):
             extra = ExtraProduct(url=content[0], prod_id=content[1], site='Extra')
             product_list.append(extra)
 
-        print 'retornando lista de produtos'
+        logging.debug("Retornando lista de produtos")
         return product_list
 
     def get_parsed_content(self, doc):
@@ -186,9 +191,7 @@ class HomePageNetshoes(HomePage):
                 url_temp = self.get_pagination_rule(doc)
             except Exception, e:
                 #caso tenha ocorrido o parse em uma pagina, eu escrevo a exception e continuo
-                import traceback
-                print traceback.print_exc()
-                continue
+                logging.error(e)
 
         return self.generate_product_list(product_list)
 
@@ -201,7 +204,7 @@ class HomePageNetshoes(HomePage):
 
 
     def get_parsed_content(self, doc):
-        print 'Pegando o conteudo Netshoes'
+        logging.debug("Parseando conteudo Netshoes")
         url_relative_list = self.get_HTML_info(doc, '//div[@class="main-content "]/div[@class="results-wrapper"]/ul[@class="product-list"]/li/span[@class="single-product"]/a/@href')
         products_list = self.get_HTML_info(doc, '//div[@class="main-content "]/div[@class="results-wrapper"]/ul[@class="product-list"]/li/span[@class="single-product"]/a/@data-product')
         url_list = self.get_full_url(url_relative_list)

@@ -6,6 +6,7 @@ env_scrapstore/
 [Ll]ib
 [Ll]ocal
 *.ini
+*.log
 # MacOSX
 .DS_Store
 *.pyc

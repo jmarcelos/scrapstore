@@ -4,6 +4,7 @@ from helper.crawler import Crawler
 from mongoengine import *
 from decimal import Decimal
 import re
+import logging
 
 class ProductHistory(EmbeddedDocument):
 
@@ -16,7 +17,7 @@ class ProductHistory(EmbeddedDocument):
 
 class Product(Document, Crawler):
 
-    url = StringField(max_length=250, required=True, unique=True)
+    url = StringField(max_length=400, required=True, unique=True)
     prod_id = IntField(default=-1, primary_key=True)
     name = StringField(max_length=200)
     description = StringField(max_length=200)
@@ -32,6 +33,14 @@ class Product(Document, Crawler):
     meta = {'collection': 'PRODUCT_COLLECTION', 'allow_inheritance': True, 'abstract': True}
 
 
+    def update_content(self):
+        self.parse()
+        try:
+            self.save()
+        except Exception, e:
+            logging.error(e)
+
+
     def to_dict(self):
         return { "url" : self.url, "prod_id": self.prod_id, "name": self.name, "description" : self.description,  "site": self.site,
                  "keywords":self.keywords, "picture": self.picture, "product_history": self.product_history.to_dict,
@@ -43,7 +52,7 @@ class Product(Document, Crawler):
                 doc = self.crawl_HTML(self.url)
                 self = self.get_parsed_content(doc)
             except Exception, e:
-                print e
+                logging.error(e)
         return self
 
     def get_parsed_content(self, doc):
@@ -58,6 +67,13 @@ class Product(Document, Crawler):
     def __hash__(self):
         return hash(self.prod_id) ^ hash(self.url)
 
+    @classmethod
+    def update_products(cls):
+        product_list = cls.objects
+        logging.debug("Atualizando %d produtos", len(product_list))
+        for product in product_list:
+            product.update_content()
+            logging.debug('Produto atualizado: %s', product)
 
 class AmericanasProduct(Product):
     meta = {'collection': 'PRODUCT_AMERICANAS_COLLECTION'}
@@ -72,7 +88,7 @@ class AmericanasProduct(Product):
         self.keywords = self.get_HTML_info(doc, '//head/meta[@name="keywords"]/@content')[0].split(',')
         self.picture = self.get_HTML_info(doc, '//div/div/div/div/ul[@class="a-carousel-list"]/li/img/@src')[0]
         self.product_history.append(ProductHistory(price=self.last_price))
-        self.prod_id = self.get_HTML_info(doc, '//div[@class="mp-pricebox-wrp"]/@data-sku')[0]
+        #self.prod_id = self.get_HTML_info(doc, '//div[@class="mp-pricebox-wrp"]/@data-sku')[0]
 
         return self
 
@@ -109,7 +125,7 @@ class SubmarinoProduct(Product):
         self.keywords = self.get_HTML_info(doc, '//head/meta[@name="keywords"]/@content')[0].split(',')
         self.picture = self.get_HTML_info(doc, '//div/div/div/div/ul[@class="a-carousel-list"]/li/img/@src')[0]
         self.product_history.append(ProductHistory(price=self.last_price))
-        self.prod_id = self.get_HTML_info(doc, '//div[@class="mp-pricebox-wrp"]/@data-sku')[0]
+        #self.prod_id = self.get_HTML_info(doc, '//div[@class="mp-pricebox-wrp"]/@data-sku')[0]
 
         return self
 

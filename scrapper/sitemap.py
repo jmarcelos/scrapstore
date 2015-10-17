@@ -1,12 +1,14 @@
+import sys
+import logging
+
 from model.home import HomePageAmericanas, HomePage, HomePageExtra, HomePageNetshoes
 from model.product import AmericanasProduct, NetshoesProduct
 from helper.crawler import Crawler
-import sys
 
 
-def getHomePageClass(name):
-    module_path = "model.home"
-    name = "HomePage" + name
+
+def getClass(name, module_path="model.home"):
+
     try:
         module = __import__(module_path, fromlist=[name])
     except ImportError:
@@ -72,7 +74,7 @@ class SitemapReader():
                 complete_product = product.parse()
                 product_list.append(complete_product)
             else:
-                home_page_class = getHomePageClass(sitemap_key)
+                home_page_class = getClass(name="HomePage"+sitemap_key)
                 homepage = home_page_class(url=url, priority=10, site=sitemap_key)
                 homepage_list.append(homepage)
         return content_sitemap
@@ -91,16 +93,36 @@ class HomePageReader(object):
         for home in homepage_class_name.objects(priority__lte=5):
             product_list.extend(home.parse())
             i+=1
-            print 'Total parcial: %d homes lidas e %d produtos' %(i, len(product_list))
+            logging.debug("Total parcial: %d homes lidas e %d produtos", i, len(product_list))
 
         new_products_set = set(product_list)
         new_products_list = list(new_products_set)
-
-        print "Foram lidos %d" % homepage_class_name.add_products(new_products_list)
+        total = homepage_class_name.add_products(new_products_list)
+        logging.debug("Foram lidos %d", total)
         return
+
+class ProductReader(object):
+
+    def update_products(self, product_type):
+        product = product_type()
+        product.update_products()
+
+def setup_log(arguments):
+
+        try:  # Python 2.7+
+            from logging import NullHandler
+        except ImportError:
+            class NullHandler(logging.Handler):
+                def emit(self, record):
+                    pass
+
+        logging.getLogger(__name__).addHandler(NullHandler())
+        logging.basicConfig(filename=arguments[1]+"-"+arguments[2]+".log",level=logging.DEBUG)
 
 
 if __name__ == '__main__':
+
+    setup_log(sys.argv)
 
     sites = {"Americanas":"http://www.americanas.com.br/sitemap_index_acom.xml",
             "Extra":"http://buscando.extra.com.br/sitemap.xml",
@@ -109,14 +131,21 @@ if __name__ == '__main__':
     if sys.argv and sys.argv[1] == 'sitemap-read':
         #gera as homepages a partir dos sitemaps
         sitemap = sites[sys.argv[2]]
-        print "Opcao de leitura do sitemap, iniciando geracao das homes de produto do site %s" % sitemap
+        logging.debug("Opcao de leitura do sitemap, iniciando geracao das homes de produto do site %s", sitemap)
         x = SitemapReader({sys.argv[2]: sitemap})
         total_inserted = x.run()
-        print "Foram lidas %d paginas, que podem ser homes e pagina de produtos" % total_inserted
+        logging.debug("Foram lidas %d paginas, que podem ser homes e pagina de produtos", total_inserted)
+
     elif sys.argv and sys.argv[1] == 'product-read':
-        print "Inicia o processo de leitura das homes %s para gerar as paginas e produto" % sys.argv[2]
+        logging.debug("Inicia o processo de leitura das homes %s para gerar as paginas e produto", sys.argv[2])
 
-        cls_ = getHomePageClass(sys.argv[2])
-
+        cls_ = getClass(name="HomePage"+sys.argv[2])
         home_page_reader = HomePageReader()
         home_page_reader.read_content(cls_)
+
+    elif sys.argv and sys.argv[1] == 'product-update':
+        logging.debug("Inicia o processo de leitura de updade dos produtos %s", sys.argv[2])
+
+        cls_ = getClass(name=sys.argv[2]+"Product", module_path="model.product")
+        product_reader = ProductReader()
+        product_reader.update_products(cls_)
