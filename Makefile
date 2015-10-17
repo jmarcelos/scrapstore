@@ -22,6 +22,9 @@ sitemap-extra:
 sitemap-netshoes:
 	python scrapper/sitemap.py sitemap-read Netshoes
 
+home-read-acom:
+	python scrapper/sitemap.py product-read Americanas
+
 clean:
 	@find . -name \*.pyc -delete
 	@find . -name \*.orig -delete
