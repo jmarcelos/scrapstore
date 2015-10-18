@@ -1,3 +1,4 @@
+# coding=utf-8
 import sys
 import logging
 
@@ -90,15 +91,27 @@ class HomePageReader(object):
     def read_content(self, homepage_class_name):
         product_list = []
         i = 0
+        total_inserido = 0
+        total_lido = 0
         for home in homepage_class_name.objects(priority__lte=5):
             product_list.extend(home.parse())
             i+=1
-            logging.debug("Total parcial: %d homes lidas e %d produtos", i, len(product_list))
+            total_lido += len(product_list)
+            #por ser uma máquina pequena estamos inserindo aos poucos
+            if len(product_list) > 10000:
+                new_products_set = set(product_list)
+                new_products_list = list(new_products_set)
+                total_inserido += homepage_class_name.add_products(new_products_list)
+                logging.debug("Insercao partial de produtos, porque a maquina só tem 1GB")
+                product_list = []
+
+            logging.debug("Total parcial: %d homes lidas e %d produtos", i, total_lido)
 
         new_products_set = set(product_list)
         new_products_list = list(new_products_set)
-        total = homepage_class_name.add_products(new_products_list)
-        logging.debug("Foram lidos %d", total)
+        total_inserido += homepage_class_name.add_products(new_products_list)
+
+        logging.debug("Foram lidos %d e inseridos", total_lido, total_inserido)
         return
 
 class ProductReader(object):

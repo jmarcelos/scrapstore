@@ -1,10 +1,12 @@
 # coding=utf-8
+import re
+import logging
+from decimal import Decimal
 from datetime import datetime
 from helper.crawler import Crawler
 from mongoengine import *
-from decimal import Decimal
-import re
-import logging
+
+
 
 class ProductHistory(EmbeddedDocument):
 

@@ -1,9 +1,12 @@
+# coding=utf-8
 import re
-from helper.crawler import Crawler
-from datetime import datetime
-from mongoengine import *
-from product import *
 import logging
+from datetime import datetime
+
+from mongoengine import *
+from helper.crawler import Crawler
+from product import *
+
 
 
 class HomePage(Crawler, Document):
