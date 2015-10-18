@@ -69,7 +69,7 @@ creategit:
 
 
 remotegit:
-	git remote add deploy ssh://54.94.182.221/home/ec2-user/desenv/scrapstore
+	git remote add deploy ssh://54.94.182.221/home/ec2-user/desenv
 
 deploy-amazon:
 	git push deploy +master:refs/heads/master
