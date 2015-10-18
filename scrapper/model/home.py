@@ -31,6 +31,7 @@ class HomePage(Crawler, Document):
     @staticmethod
     def add_products(product_list):
         i = 0
+        logging.debug("Tentativa de inserir %d registros", len(product_list))
         for product in product_list:
             try:
                 product.save()
@@ -38,7 +39,7 @@ class HomePage(Crawler, Document):
             except Exception as e:
                 logging.error(e)
 
-        logging.debug("Tentativa de inserir %d registros, mas foram inseridos %d", len(product_list), i)
+        logging.debug("Foram inseridos %d", i)
         return i
 
     def scanned(self):

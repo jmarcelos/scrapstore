@@ -97,6 +97,8 @@ class AmericanasProduct(Product):
 
 class NetshoesProduct(Product):
 
+    meta = {'collection': 'PRODUCT_NETSHOES_COLLECTION'}
+
     pattern = '([0-9]+.[0-9]+)'
 
     def get_parsed_content(self, doc):
@@ -116,6 +118,8 @@ class NetshoesProduct(Product):
 
 
 class SubmarinoProduct(Product):
+
+    meta = {'collection': 'PRODUCT_SUBMARINO    _COLLECTION'}
 
     def get_parsed_content(self, doc):
         self.name = self.get_HTML_info(doc, '//div[@class="mp-title"]/h1/@title')[0]
