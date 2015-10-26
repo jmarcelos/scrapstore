@@ -11,7 +11,7 @@ from re import sub
 
 
 
-class Archive:
+class Archive(Crawler):
 	archive_host = "http://web.archive.org"
 	archive_save = archive_host+"/save/"
 	archive_search = "http://archive.org/wayback/available?"
@@ -26,6 +26,7 @@ class Archive:
 		self.url = url
 		self.url_archive = url_archive
 		self.date = date
+
 
 	def to_dict(self):
 		return self.__dict__

@@ -3,6 +3,7 @@ import unittest
 from model.home import HomePageAmericanas, HomePage, HomePageExtra, HomePageNetshoes
 from sitemap import HomePageReader
 from model.product import *
+from helper.archive import Archive
 
 class TestHomeModel(unittest.TestCase):
     pass
@@ -53,26 +54,28 @@ class TestHomeModel(unittest.TestCase):
 #
 class TestProductModel(unittest.TestCase):
 
-    def test_update_product_americanas(self):
-        americanas_product = AmericanasProduct(url="http://www.americanas.com.br/produto/124258695/smartphone-samsung-galaxy-gran-prime-duos-dual-chip-android-tela-5-memoria-interna-8gb-3g-camera-8mp-dourado", prod_id=1)
-        americanas_product.update_content()
-        self.assertEqual(americanas_product.name, u'Smartphone Samsung Galaxy Gran Prime Duos Dual Chip Android Tela 5" Memória Interna 8GB 3G Câmera 8MP - Dourado')
-        self.assertNotEqual(americanas_product.prod_id, 124258695)
-        self.assertEqual(americanas_product.prod_id, 1)
-        self.assertEqual(len(americanas_product.product_history), 1)
-        americanas_product = AmericanasProduct.objects(prod_id =1)[0]
-        americanas_product.update_content()
-        self.assertEqual(americanas_product.name, u'Smartphone Samsung Galaxy Gran Prime Duos Dual Chip Android Tela 5" Memória Interna 8GB 3G Câmera 8MP - Dourado')
-        self.assertNotEqual(americanas_product.prod_id, 124258695)
-        self.assertEqual(americanas_product.prod_id, 1)
-        self.assertEqual(len(americanas_product.product_history), 2)
 
-
-    # def test_parse_americanas(self):
-    #     americanas_product = AmericanasProduct(url="http://www.americanas.com.br/produto/124258695/smartphone-samsung-galaxy-gran-prime-duos-dual-chip-android-tela-5-memoria-interna-8gb-3g-camera-8mp-dourado")
-    #     americanas_product = americanas_product.parse()
+    # def test_update_product_americanas(self):
+    #     americanas_product = AmericanasProduct(url="http://www.americanas.com.br/produto/124258695/smartphone-samsung-galaxy-gran-prime-duos-dual-chip-android-tela-5-memoria-interna-8gb-3g-camera-8mp-dourado", prod_id=1)
+    #     americanas_product.update_content()
     #     self.assertEqual(americanas_product.name, u'Smartphone Samsung Galaxy Gran Prime Duos Dual Chip Android Tela 5" Memória Interna 8GB 3G Câmera 8MP - Dourado')
-    #
+    #     self.assertNotEqual(americanas_product.prod_id, 124258695)
+    #     self.assertEqual(americanas_product.prod_id, 1)
+    #     self.assertEqual(len(americanas_product.product_history), 1)
+    #     americanas_product = AmericanasProduct.objects(prod_id =1)[0]
+    #     americanas_product.update_content()
+    #     self.assertEqual(americanas_product.name, u'Smartphone Samsung Galaxy Gran Prime Duos Dual Chip Android Tela 5" Memória Interna 8GB 3G Câmera 8MP - Dourado')
+    #     self.assertNotEqual(americanas_product.prod_id, 124258695)
+    #     self.assertEqual(americanas_product.prod_id, 1)
+    #     self.assertEqual(len(americanas_product.product_history), 2)
+
+
+    def test_parse_americanas(self):
+        americanas_product = AmericanasProduct(url="http://www.americanas.com.br/produto/124258695/smartphone-samsung-galaxy-gran-prime-duos-dual-chip-android-tela-5-memoria-interna-8gb-3g-camera-8mp-dourado")
+        americanas_product = americanas_product.parse()
+        americanas_product.save()
+        self.assertEqual(americanas_product.name, u'Smartphone Samsung Galaxy Gran Prime Duos Dual Chip Android Tela 5" Memória Interna 8GB 3G Câmera 8MP - Dourado')
+
     #
     # def test_parse_Netshoes(self):
     #     netshoes_product = NetshoesProduct(url="http://www.netshoes.com.br/produto/tenis-mizuno-wave-ultima-6-149-0352-416")
@@ -85,6 +88,16 @@ class TestProductModel(unittest.TestCase):
     #     submarino_product = SubmarinoProduct(url="http://www.submarino.com.br/produto/112941067/aparador-de-pelos-philips-multigroom-qg3340-16-com-acessorios")
     #     submarino_product = submarino_product.parse()
     #     self.assertEqual(submarino_product.name, u"Aparador de Pelos Philips Multigroom QG3340/16 com Acessórios")
+
+
+# class TestArchive(unittest.TestCase):
+#
+#     def test_generate_image(self):
+#         url = 'http://www.americanas.com.br/produto/124258695/smartphone-samsung-galaxy-gran-prime-duos-dual-chip-android-tela-5-memoria-interna-8gb-3g-camera-8mp-dourado'
+#         archive = Archive()
+#         content = archive.get_archived_url(url)
+#         print content
+#         self.assertTrue(None!=content)
 
 
 if __name__ == '__main__':
