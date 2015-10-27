@@ -24,9 +24,6 @@ sitemap-extra:
 sitemap-netshoes:
 	python scrapper/sitemap.py sitemap-read Netshoes
 
-
-
-
 home-read-all: home-read-americanas home-read-submarino home-read-netshoes home-read-extra
 
 home-read-americanas:
@@ -40,8 +37,6 @@ home-read-netshoes:
 
 home-read-extra:
 	python scrapper/sitemap.py product-read Submarino
-
-
 
 update-product-all: update-product-americanas update-product-submarino update-product-extra update-product-netshoes
 
@@ -62,14 +57,13 @@ clean:
 	@find . -name \*.pyc -delete
 	@find . -name \*.orig -delete
 
-
 creategit:
 	git init
 	echo "# Virtualenv\n.Python\n*.log\n*.ini\n*.pyc\nenv_scrapstore/\n[Bb]in\n[Ii]nclude\n[Ll]ib\n[Ll]ocal\n# MacOSX\n.DS_Store" >> .gitignore
 
-
 remotegit:
-	git remote add deploy ssh://54.94.182.221/home/ec2-user/desenv
+	#http://www.jeffhoefs.com/2012/09/setup-git-deploy-for-aws-ec2-ubuntu-instance/
+	git remote add deploy ssh://54.94.204.48/home/ec2-user/desenv
 
 deploy-amazon:
 	git push deploy +master:refs/heads/master
