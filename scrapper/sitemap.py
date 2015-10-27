@@ -99,6 +99,7 @@ class HomePageReader(object):
             #por ser uma máquina pequena estamos inserindo aos poucos
             if len(product_list) > 10000:
                 import pdb; pdb.set_trace()
+                
                 total_lido += len(product_list)
                 new_products_set = set(product_list)
                 new_products_list = list(new_products_set)
