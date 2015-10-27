@@ -63,7 +63,7 @@ creategit:
 
 remotegit:
 	#http://www.jeffhoefs.com/2012/09/setup-git-deploy-for-aws-ec2-ubuntu-instance/
-	git remote add deploy ssh://54.94.137.137/home/ec2-user/desenv
+	git remote add deploy ssh://54.94.137.137/home/ubuntu/desenv
 
 deploy-amazon:
 	git push deploy +master:refs/heads/master
