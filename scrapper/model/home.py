@@ -16,7 +16,7 @@ class HomePage(Crawler, Document):
     last_scan_date = DateTimeField()
     site = StringField(max_length=20, required=True)
 
-    meta = {'collection': 'HOMELIST_COLLETION', 'allow_inheritance': True}
+    meta = {'collection': 'HOMELIST_COLLECTION', 'allow_inheritance': True}
 
     def parse(self):
         raise NotImplementedError()
@@ -28,6 +28,23 @@ class HomePage(Crawler, Document):
     def get_products():
         return self.__class__.objects()
 
+
+    @staticmethod
+    def add_homes(homepage_list):
+        i = 0
+        logging.debug("Tentativa de inserir %d registros", len(homepage_list))
+        for home in homepage_list:
+            try:
+                home.save()
+                i+=1
+            except Exception as e:
+                logging.error(home.url)
+                logging.error(e)
+
+        logging.debug("Foram inseridos %d de um total de ", i, len(homepage_list))
+        return i
+
+    #teste
     @staticmethod
     def add_products(product_list):
         i = 0
@@ -62,6 +79,7 @@ class HomePageAmericanas(HomePage):
 
     meta = {'allow_inheritance': True}
 
+    #teste
     def parse(self):
         logging.debug('Iniciando parser americanas')
         page_number = 0
@@ -85,16 +103,19 @@ class HomePageAmericanas(HomePage):
         logging.debug("Homes parseadas, lidos  %d produtos", len(product_list))
         return self.generate_product_list(product_list)
 
+    #teste
     def get_parsed_content(self, doc):
         url_list = self.get_HTML_info(doc, '//div[@class="paginado"]/section/article/div/form/div[@class="productImg"]/a/@href')
         id_list = self.get_HTML_info(doc, '//div[@class="paginado"]/section/article/div/form/meta/@content')
         return zip(url_list, id_list)
 
+    #teste
     def get_pagination_rule(self, page_number):
         if page_number < 1:
             return "ofertas.limit=%s" % self.quantidade_por_pagina
         return "ofertas.limit=%s&ofertas.offset=%s" % (self.quantidade_por_pagina, self.quantidade_por_pagina * page_number)
 
+    #teste
     def generate_product_list(self, url_id_list):
         product_list = []
 

@@ -14,11 +14,12 @@ class Crawler(object):
     __opener.addheaders = [USER_AGENT]
     __curl = pycurl.Curl()
 
+    #teste
     def crawl(self, url):
         if not url:
             raise ValueError('Null is not allowed')
         file = self.__opener.open(url)
-        file_content = file.read().decode('utf-8')
+        file_content = file.read()
         file.close()
         return file_content
 
@@ -30,7 +31,11 @@ class Crawler(object):
         data = json.loads(self.crawl(url))
         return data
 
+    #teste
     def crawl_HTML_with_headers(self, url):
+        if not url:
+            raise ValueError('Null is not allowed')
+
         body = StringIO.StringIO()
         headers = StringIO.StringIO()
 
@@ -55,12 +60,14 @@ class Crawler(object):
         xmldoc = minidom.parseString(self.crawl(url))
         return xmldoc
 
+    #teste
     def get_HTML_info(self, document, rules=None):
         if not len(document):
             raise ValueError('Document could not be null')
 
         return document.xpath(rules)
 
+    #teste
     def get_XML_info(self, document, rules=None):
         if not document:
             raise ValueError('Document could not be null')

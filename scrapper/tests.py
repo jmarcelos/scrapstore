@@ -5,6 +5,7 @@ from sitemap import HomePageReader
 from model.product import *
 from helper.archive import Archive
 
+
 class TestHomeModel(unittest.TestCase):
     pass
 
@@ -53,7 +54,7 @@ class TestHomeModel(unittest.TestCase):
 #
 #
 class TestProductModel(unittest.TestCase):
-
+    pass
 
     # def test_update_product_americanas(self):
     #     americanas_product = AmericanasProduct(url="http://www.americanas.com.br/produto/124258695/smartphone-samsung-galaxy-gran-prime-duos-dual-chip-android-tela-5-memoria-interna-8gb-3g-camera-8mp-dourado", prod_id=1)
@@ -70,11 +71,11 @@ class TestProductModel(unittest.TestCase):
     #     self.assertEqual(len(americanas_product.product_history), 2)
 
 
-    def test_parse_americanas(self):
-        americanas_product = AmericanasProduct(url="http://www.americanas.com.br/produto/124258695/smartphone-samsung-galaxy-gran-prime-duos-dual-chip-android-tela-5-memoria-interna-8gb-3g-camera-8mp-dourado")
-        americanas_product = americanas_product.parse()
-        americanas_product.save()
-        self.assertEqual(americanas_product.name, u'Smartphone Samsung Galaxy Gran Prime Duos Dual Chip Android Tela 5" Memória Interna 8GB 3G Câmera 8MP - Dourado')
+    # def test_parse_americanas(self):
+    #     americanas_product = AmericanasProduct(url="http://www.americanas.com.br/produto/124258695/smartphone-samsung-galaxy-gran-prime-duos-dual-chip-android-tela-5-memoria-interna-8gb-3g-camera-8mp-dourado")
+    #     americanas_product = americanas_product.parse()
+    #     americanas_product.save()
+    #     self.assertEqual(americanas_product.name, u'Smartphone Samsung Galaxy Gran Prime Duos Dual Chip Android Tela 5" Memória Interna 8GB 3G Câmera 8MP - Dourado')
 
     #
     # def test_parse_Netshoes(self):

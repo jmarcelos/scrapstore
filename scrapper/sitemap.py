@@ -52,10 +52,11 @@ class SitemapReader():
                 content_list = set(content_list)
                 content_list = list(content_list)
                 if key == 'homepage':
-                    total_inserted_aux = len(HomePage.objects.insert(content_list))
+                    total_inserted_aux = len(HomePage.add_homes(content_list))
                 else:
                     total_inserted_aux = len(NetshoesProduct.objects.insert(content_list))
             total_inserted += total_inserted_aux
+            logging.debug("Foram inseridos %d de %s", total_inserted, HomePage.__name__)
         return total_inserted
 
 
@@ -99,7 +100,7 @@ class HomePageReader(object):
             #por ser uma máquina pequena estamos inserindo aos poucos
             if len(product_list) > 10000:
                 import pdb; pdb.set_trace()
-                
+
                 total_lido += len(product_list)
                 new_products_set = set(product_list)
                 new_products_list = list(new_products_set)

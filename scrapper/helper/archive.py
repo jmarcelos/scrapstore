@@ -13,6 +13,7 @@ class Archive(Crawler):
     timestamp_mask = '%Y%m%d%H%M%S'
 
 
+    #teste
     def get_archived_url(self, url):
         search_archive_url = None
         doc, headers = self.crawl_HTML_with_headers(self.archive_save+url)
@@ -29,6 +30,7 @@ class Archive(Crawler):
         return self.get_url_from_archive_content(search_archive_url)
 
 
+    #teste    
     def get_url_from_archive_content(self,url):
         json_data = self.crawl_json(url)
         return json_data['archived_snapshots']['closest']['url']
