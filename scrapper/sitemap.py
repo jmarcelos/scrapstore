@@ -98,9 +98,7 @@ class HomePageReader(object):
             product_list.extend(home.parse())
             i+=1
             #por ser uma máquina pequena estamos inserindo aos poucos
-            if len(product_list) > 10000:
-                import pdb; pdb.set_trace()
-
+            if len(product_list) > 5000:
                 total_lido += len(product_list)
                 new_products_set = set(product_list)
                 new_products_list = list(new_products_set)

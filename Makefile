@@ -11,6 +11,10 @@ creategit:
 	echo "# Virtualenv\n.Python\n*.log\n*.ini\n*.pyc\nenv_scrapstore/\n[Bb]in\n[Ii]nclude\n[Ll]ib\n[Ll]ocal\n# MacOSX\n.DS_Store" >> .gitignore
 
 
+run-newrelic-americanas:
+	export NEW_RELIC_CONFIG_FILE=newrelic.ini
+	newrelic-admin run-program python scrapper/sitemap.py product-read Americanas
+
 
 #ambientes
 install-amazon:
