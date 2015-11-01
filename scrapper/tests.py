@@ -1,9 +1,49 @@
 # coding=utf-8
 import unittest
+from mock import *
+from helper import *
+from model.product import *
 from model.home import HomePageAmericanas, HomePage, HomePageExtra, HomePageNetshoes
 from sitemap import HomePageReader
-from model.product import *
-from helper.archive import Archive
+
+
+class TestCrawler(unittest.TestCase):
+
+
+    def test_crawl_with_valid_url(self):
+        crawler = Crawler()
+        url = 'http://www.globo.com'
+        crawler._opener.open = Mock()
+        crawler.crawl(url)
+        crawler._opener.open.assert_called_with(url)
+
+    def test_crawl_without_url(self):
+        with self.assertRaises(ValueError) as context:
+            crawler = Crawler()
+            url = None
+            crawler.crawl(url)
+
+        self.assertTrue('Null is not allowed' in context.exception)
+
+
+    def test_get_HTML_info_without_document(self):
+        with self.assertRaises(ValueError) as context:
+            crawler = Crawler()
+            document = None
+            crawler.get_HTML_info(document)
+
+        self.assertTrue('Document could not be null' in context.exception)
+
+    def test_get_HTML_info_without_document(self):
+        with self.assertRaises(ValueError) as context:
+            crawler = Crawler()
+            document = None
+            crawler.get_XML_info(document)
+
+        self.assertTrue('Document could not be null' in context.exception)
+
+class TestArchive(unittest.TestCase):
+
 
 
 class TestHomeModel(unittest.TestCase):
