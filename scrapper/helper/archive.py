@@ -15,6 +15,10 @@ class Archive(Crawler):
 
     #teste
     def get_archived_url(self, url):
+
+        if not url:
+            raise ValueError('Null is not allowed')
+
         search_archive_url = None
         doc, headers = self.crawl_HTML_with_headers(self.archive_save+url)
 
@@ -25,12 +29,11 @@ class Archive(Crawler):
                 date = datetime.strptime(timestamp, self.timestamp_mask)
                 search = "url=%s&timestamp=%s" % (url,date.strftime(timestamp))
                 search_archive_url = self.archive_search+search
-                break
+                return self.get_url_from_archive_content(search_archive_url)
 
-        return self.get_url_from_archive_content(search_archive_url)
+        return ''
 
 
-    #teste    
     def get_url_from_archive_content(self,url):
         json_data = self.crawl_json(url)
         return json_data['archived_snapshots']['closest']['url']

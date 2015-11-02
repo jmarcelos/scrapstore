@@ -44,6 +44,33 @@ class TestCrawler(unittest.TestCase):
 
 class TestArchive(unittest.TestCase):
 
+    def test_get_url_from_archive_content(self):
+        archive = Archive()
+        url = 'http://wwww.globo.com'
+        archive.crawl_json = Mock(return_value={'archived_snapshots':{'closest':{'url': url}}})
+
+        self.assertEqual(url, archive.get_url_from_archive_content(url))
+        archive.crawl_json(url)
+
+    def test_get_archived_without_url(self):
+        with self.assertRaises(ValueError) as context:
+            archive = Archive()
+            url = None
+            archive.get_archived_url(url)
+
+        self.assertTrue('Null is not allowed' in context.exception)
+
+    def test_get_archived_url_by_archive(self):
+
+        header = """Connection: keep-alive\r\nContent-Encoding: gzip\r\nContent-Location: /web/20151102140420/https://www.hotelurbano.com/hoteis/porto-seguro/porto-seguro-praia-resort-all-inclusive-26?o=58543\r\nContent-Type: text/html;charset=utf-8\r\n"""
+        url = 'http://archive.org/wayback/available?url=https://www.hotelurbano.com/hoteis/porto-seguro/porto-seguro-praia-resort-all-inclusive-26?o=58543&timestamp=20151102140420'
+        archive = Archive()
+
+        archive.crawl_HTML_with_headers = Mock(return_value=(None, header))
+        archive.get_url_from_archive_content = Mock()
+
+        archive.get_archived_url("https://www.hotelurbano.com/hoteis/porto-seguro/porto-seguro-praia-resort-all-inclusive-26?o=58543")
+        archive.get_url_from_archive_content.assert_called_with(url)
 
 
 class TestHomeModel(unittest.TestCase):
